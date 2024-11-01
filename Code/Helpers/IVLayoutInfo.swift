@@ -13,9 +13,10 @@ import SpriteKit
 struct IVLayoutInfo {
     let screenSize: CGSize
     let shipSize: CGSize = .init(
-        width: (UIImage(named: "spaceship")?.size.width ?? 100) / 3.0,
-        height: (UIImage(named: "spaceship")?.size.height ?? 100) / 3.0
+        width: (UIImage(named: "spaceship")?.size.width ?? 100) / 2.0,
+        height: (UIImage(named: "spaceship")?.size.height ?? 100) / 2.0
     )
-    
+    let scrollSpeed: CGFloat? = 3
+    let shipStrollDistance: CGFloat? = 1
     // TODO: expand to include all properties for models/nodes in the game
 }

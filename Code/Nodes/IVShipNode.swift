@@ -19,8 +19,8 @@ class IVShipNode : SKNode {
 //        )
         let shipNode = SKSpriteNode(imageNamed: "spaceship")
         shipNode.size = CGSize(
-            width : shipNode.texture!.size().width / 3,
-            height: shipNode.texture!.size().height / 3
+            width : layoutInfo.shipSize.width,
+            height: layoutInfo.shipSize.height
         )
 //        shipNode.fillColor = .systemGreen
         addChild(shipNode)
