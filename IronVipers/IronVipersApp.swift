@@ -4,7 +4,7 @@ import SwiftUI
 struct IronVipersApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView().ignoresSafeArea()
         }
     }
 }
