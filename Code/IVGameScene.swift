@@ -42,11 +42,12 @@ class IVGameScene: SKScene {
         }
 
         prepareGameContext()                        // helper method to setup based on context (BEFORE anything on screen)
+        prepareBackground()
         prepareStartNodes()                         // helper method to start adding elements/models on the screen
     
         /* once everything setup; reference state machine and TRY to enter into a specific game state
-         (in this case, initial state) */
-        context.stateMachine?.enter(IVGameIdleState.self)
+         (for now, main menu state) */
+        context.stateMachine?.enter(IVMainMenuState.self)
         
     }
     
@@ -61,13 +62,11 @@ class IVGameScene: SKScene {
         context.configureStates()                               // configure each (starting) game state
     }
     
-    func prepareStartNodes() {
+    func prepareBackground() {
         guard let context else {
             return
         }
-        
         // add background
-        // let background = IVBackgroundNode()
         background.setup(screenSize: size, layoutInfo: context.layoutInfo)
         
         addChild(background)
@@ -77,20 +76,28 @@ class IVGameScene: SKScene {
         scrollBackground.background.position = CGPointMake(0, scrollBackground.background.size.height-1)
         
         addChild(scrollBackground)
+    }
+    
+    func prepareStartNodes() {
+        guard let context else {
+            return
+        }
         
         // get center position on the screen (to position the ship model)
         // TODO: need not be centered at the start; discuss more about starting positions for initial elements/models
         let center = CGPoint(x: size.width / 2.0,
-                             y: size.height / 3.0)  // **testing
+                             y: size.height / 6.0)  // **testing
         
         // create node object (to be added to the screen)
         let ship = IVShipNode()
         ship.setup(screenSize: size, layoutInfo: context.layoutInfo)
+        ship.name = "playerNode"
         ship.position = center
-        ship.zPosition = 2
+        ship.zPosition = 2          // place behind other nodes (down the z-axis)
 
         addChild(ship)              // add node to the screen
         self.ship = ship            // track reference
+        preparePlayerAnim()
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -120,48 +127,61 @@ class IVGameScene: SKScene {
             )
         }
         
-        // Idle Game state - player model strolling 'anim'
-        let strollDistance = (context?.layoutInfo.shipStrollDistance)!
-        if (ship?.position.x)! < size.width/4 {
-            direction = "right"
-        } else if(ship?.position.x)! > (size.width)*(3/4) {
-            direction = "left"
-        }
-        // add some shiver to y-axis
-        let randomNum = CGFloat.random(in: 0...1)
-        let shiver = (randomNum < 0.6) ? randomNum : -randomNum
-        ship?.position = CGPoint(
-            x: (ship?.position.x)! + getDistance(direction, strollDistance),
-            y: (ship?.position.y)! + shiver
-        )
     }
     func getDistance(_ direction: String, _ distance: CGFloat) -> CGFloat {
         return direction.elementsEqual("left") ? -distance : distance
     }
     
+    func preparePlayerAnim() {
+        let playerAction = SKAction.customAction(withDuration: 1) { [weak self] node, _ in
+            guard let self = self else { return }
+            
+            // Idle Game state - player model strolling 'anim'
+            let strollDistance = (context?.layoutInfo.shipStrollDistance)!
+            if (ship?.position.x)! < size.width/4 {
+                direction = "right"
+            } else if(ship?.position.x)! > (size.width)*(3/4) {
+                direction = "left"
+            }
+            // add some shiver to y-axis
+            let randomY = CGFloat.random(in: -1...1)
+            let centerY = size.height / 2.0
+            let deviation = 5.0
+            let offsetY = (((ship?.position.y)!+randomY) < (centerY+deviation)) ? randomY : 0
+            node.position = CGPoint(
+                x: (node.position.x) + getDistance(direction, strollDistance),
+                y: (node.position.y) + offsetY
+            )
+        }
+        ship?.run(SKAction.repeatForever(playerAction), withKey: "idleAnim")
+    }
+    
     /* METHODS TO HANDLE NODE REPOSITION ON TOUCH */
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first,
-              let state = context?.stateMachine?.currentState as? IVGameIdleState else {
+        guard let touch = touches.first else {
             return
         }
-        state.handleTouch(touch)
+        
+        // TOUCH EVENTS FOR EACH STATE
+        if let mainMenuState = context?.stateMachine?.currentState as? IVMainMenuState  {
+            mainMenuState.handleTouch(touch)
+        }
     }
 
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first,
-              let state = context?.stateMachine?.currentState as? IVGameIdleState else {
-            return
-        }
-        state.handleTouchMoved(touch)
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first,
-              let state = context?.stateMachine?.currentState as? IVGameIdleState else {
-            return
-        }
-        state.handleTouchEnded(touch)
-    }
+//    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        guard let touch = touches.first,
+//              let state = context?.stateMachine?.currentState as? IVGameIdleState else {
+//            return
+//        }
+//        state.handleTouchMoved(touch)
+//    }
+//    
+//    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        guard let touch = touches.first,
+//              let state = context?.stateMachine?.currentState as? IVGameIdleState else {
+//            return
+//        }
+//        state.handleTouchEnded(touch)
+//    }
 }

@@ -1,12 +1,10 @@
-/// #TEMPLATE FILE
-
 /**
- Defines a specific game state (properties) and game machine (operations)
+ Defines the main game play state of the game; wave generation and other core game logic will be defined here
 */
 
 import GameplayKit
 
-class IVGameIdleState: GKState {
+class IVGamePlayState: GKState {
     
     // NOTE: ANY state created MUST have reference to the scene + context
     /// STEP-1: define weak var's for both scene and context
@@ -31,32 +29,12 @@ class IVGameIdleState: GKState {
     /// a state can have multiple entry points, this helps check which state calls the current state (i.e. the parent state)
     /// ex: game-over state can be a result of time running out OR no more lives left.
     override func didEnter(from previousState: GKState?) {
-        print("did enter idle state")
+        print("did enter main game state")
     }
     
     func handleTouch(_ touch: UITouch) {
-//        guard let scene, let context else {
-//            return
-//        }
-        print("touched \(touch)")
-        // get touch position
-//        let touchLocation = touch.location(in: scene)
+        print("Touch on main game state")
+//        context.stateMachine?.enter(IVGamePlayState.self)
     }
     
-    // similar in function to 'handleTouch' (accounts for when player taps+holds on the model/node
-    func handleTouchMoved(_ touch: UITouch) {
-        guard let scene, let context else {
-            return
-        }
-        let touchLocation = touch.location(in: scene)
-        let newBoxPos = CGPoint(x: touchLocation.x - context.layoutInfo.shipSize.width / 2.0,
-                                y: touchLocation.y - context.layoutInfo.shipSize.height / 2.0)
-        scene.ship?.position = newBoxPos
-    }
-    
-    // log msg to flag end of tap / tap+hold movement
-    func handleTouchEnded(_ touch: UITouch) {
-        print("touched ended \(touch)")
-    }
 }
-

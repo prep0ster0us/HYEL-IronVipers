@@ -14,6 +14,9 @@
 		C3363C3C2CD510930006725D /* IVShipNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3363C3B2CD510930006725D /* IVShipNode.swift */; };
 		C3363C3E2CD5123A0006725D /* IVGameIdleState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3363C3D2CD5123A0006725D /* IVGameIdleState.swift */; };
 		C3363C402CD52AC90006725D /* IVBackgroundNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3363C3F2CD52AC90006725D /* IVBackgroundNode.swift */; };
+		C3C5619D2CD925B3000D9F77 /* IVMainMenuState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C5619C2CD925B3000D9F77 /* IVMainMenuState.swift */; };
+		C3C5619F2CD926A2000D9F77 /* IVGamePlayState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C5619E2CD926A2000D9F77 /* IVGamePlayState.swift */; };
+		C3C561A12CD9276F000D9F77 /* IVGameOverState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C561A02CD9276F000D9F77 /* IVGameOverState.swift */; };
 		C3D35F3F2CCDCB4900BC50A2 /* IronVipersApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D35F3E2CCDCB4900BC50A2 /* IronVipersApp.swift */; };
 		C3D35F412CCDCB4900BC50A2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D35F402CCDCB4900BC50A2 /* ContentView.swift */; };
 		C3D35F432CCDCB4B00BC50A2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3D35F422CCDCB4B00BC50A2 /* Assets.xcassets */; };
@@ -32,6 +35,9 @@
 		C3363C3B2CD510930006725D /* IVShipNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVShipNode.swift; sourceTree = "<group>"; };
 		C3363C3D2CD5123A0006725D /* IVGameIdleState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVGameIdleState.swift; sourceTree = "<group>"; };
 		C3363C3F2CD52AC90006725D /* IVBackgroundNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVBackgroundNode.swift; sourceTree = "<group>"; };
+		C3C5619C2CD925B3000D9F77 /* IVMainMenuState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVMainMenuState.swift; sourceTree = "<group>"; };
+		C3C5619E2CD926A2000D9F77 /* IVGamePlayState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVGamePlayState.swift; sourceTree = "<group>"; };
+		C3C561A02CD9276F000D9F77 /* IVGameOverState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVGameOverState.swift; sourceTree = "<group>"; };
 		C3D35F3B2CCDCB4900BC50A2 /* IronVipers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IronVipers.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3D35F3E2CCDCB4900BC50A2 /* IronVipersApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IronVipersApp.swift; sourceTree = "<group>"; };
 		C3D35F402CCDCB4900BC50A2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -58,6 +64,9 @@
 			isa = PBXGroup;
 			children = (
 				C3363C3D2CD5123A0006725D /* IVGameIdleState.swift */,
+				C3C5619C2CD925B3000D9F77 /* IVMainMenuState.swift */,
+				C3C5619E2CD926A2000D9F77 /* IVGamePlayState.swift */,
+				C3C561A02CD9276F000D9F77 /* IVGameOverState.swift */,
 			);
 			path = States;
 			sourceTree = "<group>";
@@ -226,11 +235,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3C5619D2CD925B3000D9F77 /* IVMainMenuState.swift in Sources */,
 				C3363C3E2CD5123A0006725D /* IVGameIdleState.swift in Sources */,
 				C3363C3C2CD510930006725D /* IVShipNode.swift in Sources */,
 				C3D35F512CCDD04000BC50A2 /* Dependencies.swift in Sources */,
 				C3D35F522CCDD04000BC50A2 /* GameContext.swift in Sources */,
 				C3D35F502CCDD04000BC50A2 /* GameModeType.swift in Sources */,
+				C3C561A12CD9276F000D9F77 /* IVGameOverState.swift in Sources */,
 				C3363C362CD50DB20006725D /* IVGameScene.swift in Sources */,
 				C3D35F412CCDCB4900BC50A2 /* ContentView.swift in Sources */,
 				C3363C402CD52AC90006725D /* IVBackgroundNode.swift in Sources */,
@@ -239,6 +250,7 @@
 				C3363C342CD50DA70006725D /* IVGameContext.swift in Sources */,
 				C3D35F3F2CCDCB4900BC50A2 /* IronVipersApp.swift in Sources */,
 				C3D35F532CCDD04000BC50A2 /* GameType.swift in Sources */,
+				C3C5619F2CD926A2000D9F77 /* IVGamePlayState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -33,12 +33,15 @@ class IVGameContext: GameContext {
         }
         print("did configure states")
         stateMachine = GKStateMachine(states: [     // contains all possible states in the game
-            IVGameIdleState(scene: gameScene, context: self)
+            IVMainMenuState(scene: gameScene, context: self),
+            IVGameIdleState(scene: gameScene, context: self),
+            IVGamePlayState(scene: gameScene, context: self),
+            IVGameOverState(scene: gameScene, context: self)
         ])
         // the state machine object will include difference scenarios happening in the game
         // ex: when the game starts, if we want an animation to play before actually letting the user move around;
         // need to specify that state (so that no other code is running in that time frame)
         // isolate some code execution till it's finished (only then can the other states access the nodes/screen)
     }
-
+    
 }
