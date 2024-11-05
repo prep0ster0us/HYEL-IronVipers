@@ -18,6 +18,8 @@ class IVGameScene: SKScene {
     var background: IVBackgroundNode
     var scrollBackground: IVBackgroundNode
     
+    var gameState: IVGamePlayState?
+    
     init(context: IVGameContext, size: CGSize) {    // initializing (general)
         self.context = context                      // set game context
         self.background = IVBackgroundNode()
@@ -44,6 +46,8 @@ class IVGameScene: SKScene {
         prepareGameContext()                        // helper method to setup based on context (BEFORE anything on screen)
         prepareBackground()
         prepareStartNodes()                         // helper method to start adding elements/models on the screen
+        
+        gameState = IVGamePlayState(scene: self, context: context)
     
         /* once everything setup; reference state machine and TRY to enter into a specific game state
          (for now, main menu state) */
@@ -127,6 +131,12 @@ class IVGameScene: SKScene {
             )
         }
         
+        // shoot projectiles (from player)
+        if(context?.stateMachine?.currentState is IVGamePlayState) {
+            gameState?.checkProjectileOffScreen()
+            gameState?.shootProjectile()
+        }
+    
     }
     func getDistance(_ direction: String, _ distance: CGFloat) -> CGFloat {
         return direction.elementsEqual("left") ? -distance : distance
@@ -167,21 +177,29 @@ class IVGameScene: SKScene {
         if let mainMenuState = context?.stateMachine?.currentState as? IVMainMenuState  {
             mainMenuState.handleTouch(touch)
         }
+        
+        if let gamePlayState = context?.stateMachine?.currentState as? IVGamePlayState  {
+            gamePlayState.handleTouch(touch)
+        }
     }
 
-//    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        guard let touch = touches.first,
-//              let state = context?.stateMachine?.currentState as? IVGameIdleState else {
-//            return
-//        }
-//        state.handleTouchMoved(touch)
-//    }
-//    
-//    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        guard let touch = touches.first,
-//              let state = context?.stateMachine?.currentState as? IVGameIdleState else {
-//            return
-//        }
-//        state.handleTouchEnded(touch)
-//    }
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else {
+            return
+        }
+        
+        if let gamePlayState = context?.stateMachine?.currentState as? IVGamePlayState  {
+            gamePlayState.handleTouch(touch)
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else {
+            return
+        }
+        
+        if let gamePlayState = context?.stateMachine?.currentState as? IVGamePlayState  {
+            gamePlayState.handleTouch(touch)
+        }
+    }
 }

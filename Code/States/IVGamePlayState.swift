@@ -11,6 +11,8 @@ class IVGamePlayState: GKState {
     weak var scene: IVGameScene?
     weak var context: IVGameContext?
     
+    var activeProjectile : SKSpriteNode?
+    
     /// STEP-2: initialize these values for each state
     init(scene: IVGameScene, context: IVGameContext) {
         self.scene = scene
@@ -32,9 +34,59 @@ class IVGamePlayState: GKState {
         print("did enter main game state")
     }
     
+    func shootProjectile() {
+        guard let scene else {
+            return
+        }
+        guard activeProjectile == nil else {
+            return
+        }
+        
+        let projectile = SKSpriteNode(imageNamed: "bullet-projectile")
+        projectile.name = "projectileNode"
+        print(projectile.size)
+        projectile.size = CGSize(width: 17, height: 32)
+        projectile.position = scene.ship!.position
+        projectile.zPosition = -1
+        
+        let shootUpAction = SKAction.moveBy(x: 0, y: 15, duration: 0.01)
+        projectile.run(SKAction.repeatForever(shootUpAction))
+        
+        scene.addChild(projectile)
+        activeProjectile = projectile
+    }
+    
+    func checkProjectileOffScreen() {
+        guard let scene else {
+            return
+        }
+        if let projectile = activeProjectile, projectile.position.y > scene.size.height {
+            print("removed")
+            projectile.removeFromParent() // Remove from the scene
+            activeProjectile = nil        // Reset the projectile reference
+        }
+    }
+    
     func handleTouch(_ touch: UITouch) {
-        print("Touch on main game state")
-//        context.stateMachine?.enter(IVGamePlayState.self)
+        guard let scene else {
+            return
+        }
+        print("touched main game state")
+        // move player to touch location
+        scene.ship?.position = touch.location(in: scene)
+    }
+    
+    func handleTouchMoved(_ touch: UITouch) {
+        guard let scene else {
+            return
+        }
+        print("touch moved")
+        // move player to touch location
+        scene.ship?.position = touch.location(in: scene)
+    }
+    
+    func handleTouchEnded(_ touch: UITouch) {
+        print("touch ended")
     }
     
 }
