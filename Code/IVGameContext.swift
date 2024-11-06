@@ -16,7 +16,7 @@ class IVGameContext: GameContext {
         scene as? IVGameScene
     }
     let gameMode: GameModeType
-    let gameInfo: IVGameInfo
+    var gameInfo: IVGameInfo
     var layoutInfo: IVLayoutInfo = .init(screenSize: .zero)
     
     private(set) var stateMachine: GKStateMachine?

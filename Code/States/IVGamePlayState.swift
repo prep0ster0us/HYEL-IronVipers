@@ -34,8 +34,67 @@ class IVGamePlayState: GKState {
     override func didEnter(from previousState: GKState?) {
         print("did enter main game state")
         
+        showHealthBar()
+        showScore()
+        
         spawnEnemy()
     }
+    
+    func showHealthBar() {
+        guard let scene, let context else {
+            return
+        }
+        // TODO: create health bar; (for now, just HP value as text)
+        let healthLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        healthLabel.text = "HP: \(context.gameInfo.health)"
+        healthLabel.name = "healthNode"
+        healthLabel.fontColor = .white
+        healthLabel.fontSize = 24
+        healthLabel.position = CGPoint(x: scene.size.width / 1.2,
+                                      y: scene.size.height / 1.08)
+        healthLabel.zPosition = 1
+        
+        let fadeInAction = SKAction.fadeIn(withDuration: 3.0)
+        healthLabel.run(fadeInAction)
+        
+        scene.addChild(healthLabel)
+    }
+    func updateHealth() {
+        guard let context else {
+            return
+        }
+        let healthLabel = scene?.childNode(withName: "healthNode") as! SKLabelNode
+        healthLabel.text = "HP: \(context.gameInfo.health)"
+    }
+    
+    
+    func showScore() {
+        guard let scene, let context else {
+            return
+        }
+        let scoreLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        scoreLabel.text = "Score: \(context.gameInfo.score)"
+        scoreLabel.name = "scoreNode"
+        scoreLabel.fontColor = .white
+        scoreLabel.fontSize = 24
+        scoreLabel.position = CGPoint(x: scene.size.width / 6.0,
+                                      y: scene.size.height / 1.08)
+        scoreLabel.zPosition = 1
+        
+        let fadeInAction = SKAction.fadeIn(withDuration: 3.0)
+        scoreLabel.run(fadeInAction)
+        
+        scene.addChild(scoreLabel)
+    }
+    func updateScore() {
+        guard let context else {
+            return
+        }
+        let scoreLabel = scene?.childNode(withName: "scoreNode") as! SKLabelNode
+        scoreLabel.text = "Score: \(context.gameInfo.score)"
+    }
+    
+    
     
     func spawnEnemy() {
         guard let scene, let context else {
@@ -45,7 +104,7 @@ class IVGamePlayState: GKState {
         enemy.setup(screenSize: scene.size, layoutInfo: context.layoutInfo)
         enemy.name = "enemyNode"
         enemy.position = CGPoint(x: CGFloat.random(in: 5...scene.size.width-5.0),
-                                 y: scene.size.height / 1.2)
+                                 y: scene.size.height / 1.4)
         enemy.zRotation = .pi
         
         // setup physics body (to check collision with player's projectiles)
@@ -71,7 +130,6 @@ class IVGamePlayState: GKState {
         
         let projectile = SKSpriteNode(imageNamed: "bullet-projectile")
         projectile.name = "playerProjectileNode"
-        print(projectile.size)
         projectile.size = CGSize(width: 17, height: 32)
         projectile.position = scene.player!.position
         projectile.zPosition = -1
@@ -123,7 +181,7 @@ class IVGamePlayState: GKState {
         projectile.physicsBody?.collisionBitMask = IVGameInfo.none
         projectile.physicsBody?.affectedByGravity = false
         
-        let shootUpAction = SKAction.moveBy(x: 0, y: -10, duration: 0.01)
+        let shootUpAction = SKAction.moveBy(x: 0, y: -50, duration: 0.05)
         projectile.run(SKAction.repeatForever(shootUpAction))
         
         scene.addChild(projectile)
@@ -141,7 +199,6 @@ class IVGamePlayState: GKState {
         guard let scene else {
             return
         }
-        print("touched main game state")
         // move player to touch location
         scene.player?.position = touch.location(in: scene)
     }
@@ -150,13 +207,12 @@ class IVGamePlayState: GKState {
         guard let scene else {
             return
         }
-        print("touch moved")
         // move player to touch location
         scene.player?.position = touch.location(in: scene)
     }
     
     func handleTouchEnded(_ touch: UITouch) {
-        print("touch ended")
+//        print("touch ended")
     }
     
 }

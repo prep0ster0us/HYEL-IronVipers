@@ -182,6 +182,9 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
+        guard let context else {
+            return
+        }
         let contactA = contact.bodyA
         let contactB = contact.bodyB
 
@@ -200,6 +203,11 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             childNode(withName: "enemyLaser")?.run(collisionSequence)       // reset enemy projectile
             
             gameState?.enemyProjectile = nil    // reset reference to enemy projectile
+            
+            // update game score
+            context.gameInfo.score += 1
+            // update score label
+            gameState?.updateScore()
         }
 
         // Enemy projectile hits player
@@ -207,6 +215,10 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
            (contactA.categoryBitMask == IVGameInfo.player && contactB.categoryBitMask == IVGameInfo.enemyProjectile)
         {
             print("Player hit by enemy projectile")
+            // update game score
+            context.gameInfo.health -= 1
+            // update score label
+            gameState?.updateHealth()
             
         }
     }
