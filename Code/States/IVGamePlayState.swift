@@ -47,6 +47,13 @@ class IVGamePlayState: GKState {
         enemy.position = CGPoint(x: CGFloat.random(in: 5...scene.size.width-5.0),
                                  y: scene.size.height / 1.2)
         enemy.zRotation = .pi
+        
+        // setup physics body (to check collision with player's projectiles)
+        enemy.physicsBody = SKPhysicsBody(rectangleOf: enemy.ship.size)
+        enemy.physicsBody?.categoryBitMask = IVGameInfo.enemy
+        enemy.physicsBody?.contactTestBitMask = IVGameInfo.playerProjectile
+        enemy.physicsBody?.collisionBitMask = IVGameInfo.none
+        enemy.physicsBody?.affectedByGravity = false
     
         let fadeInAction = SKAction.fadeIn(withDuration: 2.0)
         enemy.run(fadeInAction)
@@ -68,6 +75,13 @@ class IVGamePlayState: GKState {
         projectile.size = CGSize(width: 17, height: 32)
         projectile.position = scene.player!.position
         projectile.zPosition = -1
+        
+        // setup physics body (to check collision with enemy node)
+        projectile.physicsBody = SKPhysicsBody(rectangleOf: projectile.size)
+        projectile.physicsBody?.categoryBitMask = IVGameInfo.playerProjectile
+        projectile.physicsBody?.contactTestBitMask = IVGameInfo.enemy
+        projectile.physicsBody?.collisionBitMask = IVGameInfo.none
+        projectile.physicsBody?.affectedByGravity = false
         
         let shootUpAction = SKAction.moveBy(x: 0, y: 15, duration: 0.01)
         projectile.run(SKAction.repeatForever(shootUpAction))
@@ -101,6 +115,13 @@ class IVGamePlayState: GKState {
         projectile.size = CGSize(width: 17, height: 32)
         projectile.position = CGPoint(x: enemy!.position.x,
                                       y: enemy!.position.y + 5.0 )
+        
+        // setup physics body (to check collision with player node)
+        projectile.physicsBody = SKPhysicsBody(rectangleOf: projectile.size)
+        projectile.physicsBody?.categoryBitMask = IVGameInfo.enemyProjectile
+        projectile.physicsBody?.contactTestBitMask = IVGameInfo.player
+        projectile.physicsBody?.collisionBitMask = IVGameInfo.none
+        projectile.physicsBody?.affectedByGravity = false
         
         let shootUpAction = SKAction.moveBy(x: 0, y: -10, duration: 0.01)
         projectile.run(SKAction.repeatForever(shootUpAction))

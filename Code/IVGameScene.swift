@@ -10,7 +10,7 @@
 import SpriteKit
 import GameplayKit
 
-class IVGameScene: SKScene {
+class IVGameScene: SKScene, SKPhysicsContactDelegate {
     
     weak var context: IVGameContext?                // get game-specific context
     var player: IVShipNode?                           // store reference for (main) player model
@@ -47,6 +47,7 @@ class IVGameScene: SKScene {
         prepareBackground()
         prepareStartNodes()                         // helper method to start adding elements/models on the screen
         
+        physicsWorld.contactDelegate = self         // initialize delegate for node physics
         gameState = IVGamePlayState(scene: self, context: context)
     
         /* once everything setup; reference state machine and TRY to enter into a specific game state
@@ -98,6 +99,13 @@ class IVGameScene: SKScene {
         player.name = "playerNode"
         player.position = center
         player.zPosition = 2          // place behind other nodes (down the z-axis)
+        
+        // setup physics body (to check contact with enemy projectiles)
+        player.physicsBody = SKPhysicsBody(rectangleOf: player.ship.size)
+        player.physicsBody?.categoryBitMask = IVGameInfo.player
+        player.physicsBody?.contactTestBitMask = IVGameInfo.enemyProjectile
+        player.physicsBody?.collisionBitMask = IVGameInfo.none
+        player.physicsBody?.affectedByGravity = false           // handle repositioning manually
 
         addChild(player)              // add node to the screen
         self.player = player            // track reference
@@ -171,6 +179,36 @@ class IVGameScene: SKScene {
             )
         }
         player?.run(SKAction.repeatForever(playerAction), withKey: "idleAnim")
+    }
+    
+    func didBegin(_ contact: SKPhysicsContact) {
+        let contactA = contact.bodyA
+        let contactB = contact.bodyB
+
+        // Player projectile hits enemy
+        if (contactA.categoryBitMask == IVGameInfo.playerProjectile && contactB.categoryBitMask == IVGameInfo.enemy) ||
+           (contactA.categoryBitMask == IVGameInfo.enemy && contactB.categoryBitMask == IVGameInfo.playerProjectile)
+        {
+            print("Enemy hit by player projectile")
+            
+            // remove enemy (with fade animation)
+            let fadeOutAction = SKAction.fadeOut(withDuration: 0.5)
+            let removeAction = SKAction.removeFromParent()
+            let collisionSequence = SKAction.sequence([fadeOutAction, removeAction])
+            
+            childNode(withName: "enemyNode")?.run(collisionSequence)        // reset enemy node
+            childNode(withName: "enemyLaser")?.run(collisionSequence)       // reset enemy projectile
+            
+            gameState?.enemyProjectile = nil    // reset reference to enemy projectile
+        }
+
+        // Enemy projectile hits player
+        if (contactA.categoryBitMask == IVGameInfo.enemyProjectile && contactB.categoryBitMask == IVGameInfo.player) ||
+           (contactA.categoryBitMask == IVGameInfo.player && contactB.categoryBitMask == IVGameInfo.enemyProjectile)
+        {
+            print("Player hit by enemy projectile")
+            
+        }
     }
     
     /* METHODS TO HANDLE NODE REPOSITION ON TOUCH */
