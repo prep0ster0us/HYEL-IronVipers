@@ -18,10 +18,7 @@ class IVShipNode : SKNode {
 //            cornerRadius: 8.0
 //        )
         let shipNode = SKSpriteNode(imageNamed: "enemy-ship")
-        shipNode.size = CGSize(
-            width : layoutInfo.shipSize.width,
-            height: layoutInfo.shipSize.height
-        )
+        shipNode.size = layoutInfo.shipSize
 //        shipNode.fillColor = .systemGreen
         addChild(shipNode)
         ship = shipNode

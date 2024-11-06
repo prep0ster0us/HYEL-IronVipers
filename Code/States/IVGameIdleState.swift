@@ -51,7 +51,7 @@ class IVGameIdleState: GKState {
         let touchLocation = touch.location(in: scene)
         let newBoxPos = CGPoint(x: touchLocation.x - context.layoutInfo.shipSize.width / 2.0,
                                 y: touchLocation.y - context.layoutInfo.shipSize.height / 2.0)
-        scene.ship?.position = newBoxPos
+        scene.player?.position = newBoxPos
     }
     
     // log msg to flag end of tap / tap+hold movement

@@ -13,7 +13,7 @@ import GameplayKit
 class IVGameScene: SKScene {
     
     weak var context: IVGameContext?                // get game-specific context
-    var ship: IVShipNode?                           // store reference for (main) player model
+    var player: IVShipNode?                           // store reference for (main) player model
                                                     // TODO: add/create references for all necessary elements/models
     var background: IVBackgroundNode
     var scrollBackground: IVBackgroundNode
@@ -93,14 +93,14 @@ class IVGameScene: SKScene {
                              y: size.height / 6.0)  // **testing
         
         // create node object (to be added to the screen)
-        let ship = IVShipNode()
-        ship.setup(screenSize: size, layoutInfo: context.layoutInfo)
-        ship.name = "playerNode"
-        ship.position = center
-        ship.zPosition = 2          // place behind other nodes (down the z-axis)
+        let player = IVShipNode()
+        player.setup(screenSize: size, layoutInfo: context.layoutInfo)
+        player.name = "playerNode"
+        player.position = center
+        player.zPosition = 2          // place behind other nodes (down the z-axis)
 
-        addChild(ship)              // add node to the screen
-        self.ship = ship            // track reference
+        addChild(player)              // add node to the screen
+        self.player = player            // track reference
         preparePlayerAnim()
     }
     
@@ -133,8 +133,15 @@ class IVGameScene: SKScene {
         
         // shoot projectiles (from player)
         if(context?.stateMachine?.currentState is IVGamePlayState) {
-            gameState?.checkProjectileOffScreen()
-            gameState?.shootProjectile()
+            gameState?.shootPlayerProjectiles()
+            gameState?.resetPlayerProjectiles()
+            
+            if childNode(withName: "enemyNode") != nil {
+                gameState?.shootEnemyProjectiles()
+                gameState?.resetEnemyProjectiles()
+            } else {
+                gameState?.spawnEnemy()
+            }
         }
     
     }
@@ -148,22 +155,22 @@ class IVGameScene: SKScene {
             
             // Idle Game state - player model strolling 'anim'
             let strollDistance = (context?.layoutInfo.shipStrollDistance)!
-            if (ship?.position.x)! < size.width/4 {
+            if (player?.position.x)! < size.width/4 {
                 direction = "right"
-            } else if(ship?.position.x)! > (size.width)*(3/4) {
+            } else if(player?.position.x)! > (size.width)*(3/4) {
                 direction = "left"
             }
             // add some shiver to y-axis
             let randomY = CGFloat.random(in: -1...1)
             let centerY = size.height / 2.0
             let deviation = 5.0
-            let offsetY = (((ship?.position.y)!+randomY) < (centerY+deviation)) ? randomY : 0
+            let offsetY = (((player?.position.y)!+randomY) < (centerY+deviation)) ? randomY : 0
             node.position = CGPoint(
                 x: (node.position.x) + getDistance(direction, strollDistance),
                 y: (node.position.y) + offsetY
             )
         }
-        ship?.run(SKAction.repeatForever(playerAction), withKey: "idleAnim")
+        player?.run(SKAction.repeatForever(playerAction), withKey: "idleAnim")
     }
     
     /* METHODS TO HANDLE NODE REPOSITION ON TOUCH */

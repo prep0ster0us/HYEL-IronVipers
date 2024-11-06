@@ -11,7 +11,8 @@ class IVGamePlayState: GKState {
     weak var scene: IVGameScene?
     weak var context: IVGameContext?
     
-    var activeProjectile : SKSpriteNode?
+    var playerProjectile : SKSpriteNode?
+    var enemyProjectile : SKSpriteNode?
     
     /// STEP-2: initialize these values for each state
     init(scene: IVGameScene, context: IVGameContext) {
@@ -32,38 +33,86 @@ class IVGamePlayState: GKState {
     /// ex: game-over state can be a result of time running out OR no more lives left.
     override func didEnter(from previousState: GKState?) {
         print("did enter main game state")
+        
+        spawnEnemy()
     }
     
-    func shootProjectile() {
+    func spawnEnemy() {
+        guard let scene, let context else {
+            return
+        }
+        let enemy = IVShipNode()
+        enemy.setup(screenSize: scene.size, layoutInfo: context.layoutInfo)
+        enemy.name = "enemyNode"
+        enemy.position = CGPoint(x: CGFloat.random(in: 5...scene.size.width-5.0),
+                                 y: scene.size.height / 1.2)
+        enemy.zRotation = .pi
+    
+        let fadeInAction = SKAction.fadeIn(withDuration: 2.0)
+        enemy.run(fadeInAction)
+        
+        scene.addChild(enemy)
+    }
+    
+    func shootPlayerProjectiles() {
         guard let scene else {
             return
         }
-        guard activeProjectile == nil else {
+        guard playerProjectile == nil else {
             return
         }
         
         let projectile = SKSpriteNode(imageNamed: "bullet-projectile")
-        projectile.name = "projectileNode"
+        projectile.name = "playerProjectileNode"
         print(projectile.size)
         projectile.size = CGSize(width: 17, height: 32)
-        projectile.position = scene.ship!.position
+        projectile.position = scene.player!.position
         projectile.zPosition = -1
         
         let shootUpAction = SKAction.moveBy(x: 0, y: 15, duration: 0.01)
         projectile.run(SKAction.repeatForever(shootUpAction))
         
         scene.addChild(projectile)
-        activeProjectile = projectile
+        playerProjectile = projectile
     }
     
-    func checkProjectileOffScreen() {
+    func resetPlayerProjectiles() {
         guard let scene else {
             return
         }
-        if let projectile = activeProjectile, projectile.position.y > scene.size.height {
-            print("removed")
+        if let projectile = playerProjectile, projectile.position.y > scene.size.height {
             projectile.removeFromParent() // Remove from the scene
-            activeProjectile = nil        // Reset the projectile reference
+            playerProjectile = nil        // Reset the projectile reference
+        }
+    }
+
+    
+    func shootEnemyProjectiles() {
+        guard let scene else {
+            return
+        }
+        guard enemyProjectile == nil else {
+            return
+        }
+        let enemy = scene.childNode(withName: "enemyNode")
+        
+        let projectile = SKSpriteNode(imageNamed: "bullet-projectile")
+        projectile.name = "enemyProjectileNode"
+        projectile.size = CGSize(width: 17, height: 32)
+        projectile.position = CGPoint(x: enemy!.position.x,
+                                      y: enemy!.position.y + 5.0 )
+        
+        let shootUpAction = SKAction.moveBy(x: 0, y: -10, duration: 0.01)
+        projectile.run(SKAction.repeatForever(shootUpAction))
+        
+        scene.addChild(projectile)
+        enemyProjectile = projectile
+    }
+    
+    func resetEnemyProjectiles() {
+        if let projectile = enemyProjectile, projectile.position.y < 0 {
+            projectile.removeFromParent() // Remove from the scene
+            enemyProjectile = nil        // Reset the projectile reference
         }
     }
     
@@ -73,7 +122,7 @@ class IVGamePlayState: GKState {
         }
         print("touched main game state")
         // move player to touch location
-        scene.ship?.position = touch.location(in: scene)
+        scene.player?.position = touch.location(in: scene)
     }
     
     func handleTouchMoved(_ touch: UITouch) {
@@ -82,7 +131,7 @@ class IVGamePlayState: GKState {
         }
         print("touch moved")
         // move player to touch location
-        scene.ship?.position = touch.location(in: scene)
+        scene.player?.position = touch.location(in: scene)
     }
     
     func handleTouchEnded(_ touch: UITouch) {
