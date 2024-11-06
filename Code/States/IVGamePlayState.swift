@@ -53,11 +53,12 @@ class IVGamePlayState: GKState {
         healthLabel.position = CGPoint(x: scene.size.width / 1.2,
                                       y: scene.size.height / 1.08)
         healthLabel.zPosition = 1
+        healthLabel.alpha = 0.0
         
-        let fadeInAction = SKAction.fadeIn(withDuration: 3.0)
-        healthLabel.run(fadeInAction)
+        let fadeInAction = SKAction.fadeIn(withDuration: 2.0)
         
         scene.addChild(healthLabel)
+        healthLabel.run(fadeInAction)
     }
     func updateHealth() {
         guard let context else {
@@ -80,11 +81,12 @@ class IVGamePlayState: GKState {
         scoreLabel.position = CGPoint(x: scene.size.width / 6.0,
                                       y: scene.size.height / 1.08)
         scoreLabel.zPosition = 1
+        scoreLabel.alpha = 0.0
         
-        let fadeInAction = SKAction.fadeIn(withDuration: 3.0)
-        scoreLabel.run(fadeInAction)
+        let fadeInAction = SKAction.fadeIn(withDuration: 2.0)
         
         scene.addChild(scoreLabel)
+        scoreLabel.run(fadeInAction)
     }
     func updateScore() {
         guard let context else {
@@ -119,6 +121,26 @@ class IVGamePlayState: GKState {
         
         scene.addChild(enemy)
     }
+    func randomizeMovement() -> SKAction {
+        // Random offsets for moving the enemy node(s)
+        let randomX = CGFloat.random(in: -100...100)
+        let randomY = CGFloat.random(in: -25...25)
+        
+        let enemy = scene?.childNode(withName: "enemyNode")
+        let dx = randomX + (enemy?.position.x)!
+        let dy = randomY + (enemy?.position.y)!
+        
+        let offsetX = (dx < 5) ? -randomX : ((dx > (scene?.size.width)!-5.0) ? -randomX : randomX)
+        let offsetY = (dy < 5) ? -randomY : ((dy > (scene?.size.height)!/2.0) ? -randomY : randomY)
+        
+//        let offsetX = ((dX + (enemy?.position.x)!) < 5 || (dX + (enemy?.position.x)!) > (scene?.size.width)!) ? 0 : dX
+//        let offsetY = ((dY + (enemy?.position.y)!) < 5 || (dY + (enemy?.position.y)!) > (scene?.size.height)!/2.0) ? 0 : dY
+
+        let moveAction = SKAction.moveBy(x: offsetX, y: offsetY, duration: 2.0)
+        let waitAction = SKAction.wait(forDuration: 0.2)        // slight pause for smoother animation
+        return SKAction.sequence([moveAction, waitAction])
+    }
+
     
     func shootPlayerProjectiles() {
         guard let scene else {
@@ -186,6 +208,8 @@ class IVGamePlayState: GKState {
         
         scene.addChild(projectile)
         enemyProjectile = projectile
+        
+        scene.childNode(withName: "enemyNode")!.run(randomizeMovement())
     }
     
     func resetEnemyProjectiles() {
