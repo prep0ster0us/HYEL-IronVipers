@@ -67,7 +67,7 @@ class IVGamePlayState: GKState {
         let healthLabel = scene.childNode(withName: "healthNode") as! SKLabelNode
         healthLabel.text = "HP: \(context.gameInfo.health)"
         
-        if context.gameInfo.health < 98 {
+        if context.gameInfo.health < context.gameInfo.testHealth {
             context.stateMachine?.enter(IVGameOverState.self)
         }
     }

@@ -238,6 +238,10 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         if let gamePlayState = context?.stateMachine?.currentState as? IVGamePlayState  {
             gamePlayState.handleTouch(touch)
         }
+        
+        if let gamePlayState = context?.stateMachine?.currentState as? IVGameOverState  {
+            gamePlayState.handleTouch(touch)
+        }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {

@@ -54,10 +54,10 @@ class IVGameOverState: GKState {
         let moveAction = SKAction.move(to: center, duration: 2.0)
         scene.childNode(withName: "playerNode")?.run(moveAction)
         
-        let playAgainLabel = SKLabelNode(text: "Play Again")
+        let playAgainLabel = SKLabelNode(text: "Tap anywhere to play Again")
         playAgainLabel.name = "playAgainLabel"
         playAgainLabel.position = CGPoint(x: scene.size.width/2.0,
-                                          y: scene.size.height * 4/5 )
+                                          y: scene.size.height/1.2 )
         playAgainLabel.zPosition = 4    // on top of scene
         playAgainLabel.fontSize = 32
         
@@ -69,7 +69,7 @@ class IVGameOverState: GKState {
             return
         }
         let center = CGPoint(x: scene.size.width/2.0,
-                             y: scene.size.height/2.0 )
+                             y: scene.size.height/3.0 )
         let scaleAction = SKAction.scale(by: 2.0, duration: 3.0)
         let moveAction = SKAction.move(to: center , duration: 2.0)
         var groupActions = Array<SKAction>()
@@ -80,24 +80,22 @@ class IVGameOverState: GKState {
     }
     
     func handleTouch(_ touch: UITouch) {
-//        guard let scene, let context else {
-//            return
-//        }
+        guard let scene, let context else {
+            return
+        }
         print("Touch on game over state")
-//        let playAgainLabel = scene.childNode(withName: "playAgainLabel") as! SKLabelNode
-//        if playAgainLabel.contains(touch.location(in: playAgainLabel)) {
-//            print("play again!")
-//            
-//            // remove nodes
-//            let fadeOutAction = SKAction.fadeOut(withDuration: 2.0)
-//            let removeAction = SKAction.removeFromParent()
-//            let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
-//            scene.childNode(withName: "playAgainLabel")?.run(removeSequence)
-//            
-//            resetScore()
-//            
-//            context.stateMachine?.enter(IVGamePlayState.self)
-//        }
+        print("play again!")
+        
+        // remove nodes
+        let fadeOutAction = SKAction.fadeOut(withDuration: 2.0)
+        let removeAction = SKAction.removeFromParent()
+        let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
+        scene.childNode(withName: "playAgainLabel")?.run(removeSequence)
+        
+        resetScore()
+        
+        context.stateMachine?.enter(IVGamePlayState.self)
+        
     }
     
     func resetScore() {
@@ -107,7 +105,7 @@ class IVGameOverState: GKState {
         // scale and place back the score label (for "new" session)
         let originalPosition = CGPoint(x: scene.size.width / 6.0,
                              y: scene.size.height / 1.08)
-        let scaleAction = SKAction.scale(by: -3.0, duration: 3.0)
+        let scaleAction = SKAction.scale(by: 2.0, duration: 3.0)
         let moveAction = SKAction.move(to: originalPosition , duration: 2.0)
         var groupActions = Array<SKAction>()
         groupActions.append(scaleAction)

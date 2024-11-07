@@ -12,6 +12,7 @@ import Foundation
 struct IVGameInfo {
     var score = 0
     var health = 100
+    var testHealth = 95
     // TODO: expand to include all properties for the game session
     
     // Physics Body Categories (for collision detection)
