@@ -61,11 +61,15 @@ class IVGamePlayState: GKState {
         healthLabel.run(fadeInAction)
     }
     func updateHealth() {
-        guard let context else {
+        guard let scene, let context else {
             return
         }
-        let healthLabel = scene?.childNode(withName: "healthNode") as! SKLabelNode
+        let healthLabel = scene.childNode(withName: "healthNode") as! SKLabelNode
         healthLabel.text = "HP: \(context.gameInfo.health)"
+        
+        if context.gameInfo.health < 98 {
+            context.stateMachine?.enter(IVGameOverState.self)
+        }
     }
     
     
