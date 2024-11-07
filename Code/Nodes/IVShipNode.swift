@@ -11,7 +11,12 @@ import SpriteKit
 
 class IVShipNode : SKNode {
 //    var ship: SKShapeNode = SKShapeNode()
+    var projectile: IVProjectileInfo = IVProjectileInfo()
     var ship: SKSpriteNode = SKSpriteNode()
+    
+    var shotDelay: Double = 0.3
+    var lastShotTime: TimeInterval = 0.0
+    
     func setup(screenSize: CGSize, layoutInfo: IVLayoutInfo) {
 //        let shipNode = SKShapeNode(
 //            rect: .init(origin: .zero, size: layoutInfo.shipSize),
@@ -22,6 +27,14 @@ class IVShipNode : SKNode {
             width : layoutInfo.shipSize.width,
             height: layoutInfo.shipSize.height
         )
+        
+        //add physics
+        ship.physicsBody = SKPhysicsBody()
+        ship.physicsBody?.isDynamic = false
+        
+        //projectile setup
+        projectile.speed = 500
+        
 //        shipNode.fillColor = .systemGreen
         addChild(shipNode)
         ship = shipNode

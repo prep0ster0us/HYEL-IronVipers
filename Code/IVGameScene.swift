@@ -134,7 +134,14 @@ class IVGameScene: SKScene {
         // shoot projectiles (from player)
         if(context?.stateMachine?.currentState is IVGamePlayState) {
             gameState?.checkProjectileOffScreen()
-            gameState?.shootProjectile()
+            //gameState?.shootProjectile()
+            
+            //player shoots projectile at given delay intervals
+            //NOTE: logic for shooting will be moved to IVShipNode
+            if ( currentTime - ship!.lastShotTime > ship!.shotDelay ) {
+                gameState?.shootProjectileV2(info: ship!.projectile, origin: ship?.position ?? CGPoint(x: 0, y: 0), direction: CGVector(dx: 0, dy: 1))
+                ship?.lastShotTime = currentTime
+            }
         }
     
     }

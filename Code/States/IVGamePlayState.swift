@@ -56,6 +56,15 @@ class IVGamePlayState: GKState {
         activeProjectile = projectile
     }
     
+    //alternate version to shoot IVProjectileNode
+    func shootProjectileV2(info: IVProjectileInfo, origin: CGPoint, direction: CGVector) {
+        guard let scene else {
+            return
+        }
+        
+        scene.addChild(IVProjectileNode(info: info, origin: origin, direction: direction))
+    }
+    
     func checkProjectileOffScreen() {
         guard let scene else {
             return
@@ -66,6 +75,7 @@ class IVGamePlayState: GKState {
             activeProjectile = nil        // Reset the projectile reference
         }
     }
+    
     
     func handleTouch(_ touch: UITouch) {
         guard let scene else {
