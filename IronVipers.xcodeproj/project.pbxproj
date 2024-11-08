@@ -25,6 +25,10 @@
 		C3D35F512CCDD04000BC50A2 /* Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D35F4D2CCDD04000BC50A2 /* Dependencies.swift */; };
 		C3D35F522CCDD04000BC50A2 /* GameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D35F4E2CCDD04000BC50A2 /* GameContext.swift */; };
 		C3D35F532CCDD04000BC50A2 /* GameType.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D35F4F2CCDD04000BC50A2 /* GameType.swift */; };
+		C3F5FD672CDD8FB00017B838 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3F5FD652CDD8FB00017B838 /* Assets.xcassets */; };
+		C3F5FD682CDD8FB00017B838 /* RedParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = C3F5FD662CDD8FB00017B838 /* RedParticle.sks */; };
+		C3F5FD6A2CDD90070017B838 /* GreenParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = C3F5FD692CDD90070017B838 /* GreenParticle.sks */; };
+		C3F5FD6C2CDD90F00017B838 /* BlueParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = C3F5FD6B2CDD90F00017B838 /* BlueParticle.sks */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +51,10 @@
 		C3D35F4D2CCDD04000BC50A2 /* Dependencies.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dependencies.swift; sourceTree = "<group>"; };
 		C3D35F4E2CCDD04000BC50A2 /* GameContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameContext.swift; sourceTree = "<group>"; };
 		C3D35F4F2CCDD04000BC50A2 /* GameType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameType.swift; sourceTree = "<group>"; };
+		C3F5FD652CDD8FB00017B838 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C3F5FD662CDD8FB00017B838 /* RedParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = RedParticle.sks; sourceTree = "<group>"; };
+		C3F5FD692CDD90070017B838 /* GreenParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GreenParticle.sks; sourceTree = "<group>"; };
+		C3F5FD6B2CDD90F00017B838 /* BlueParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = BlueParticle.sks; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +84,10 @@
 			children = (
 				C3363C3B2CD510930006725D /* IVShipNode.swift */,
 				C3363C3F2CD52AC90006725D /* IVBackgroundNode.swift */,
+				C3F5FD652CDD8FB00017B838 /* Assets.xcassets */,
+				C3F5FD662CDD8FB00017B838 /* RedParticle.sks */,
+				C3F5FD692CDD90070017B838 /* GreenParticle.sks */,
+				C3F5FD6B2CDD90F00017B838 /* BlueParticle.sks */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -223,7 +235,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3F5FD672CDD8FB00017B838 /* Assets.xcassets in Resources */,
+				C3F5FD6C2CDD90F00017B838 /* BlueParticle.sks in Resources */,
+				C3F5FD682CDD8FB00017B838 /* RedParticle.sks in Resources */,
 				C3D35F462CCDCB4B00BC50A2 /* Preview Assets.xcassets in Resources */,
+				C3F5FD6A2CDD90070017B838 /* GreenParticle.sks in Resources */,
 				C3D35F432CCDCB4B00BC50A2 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

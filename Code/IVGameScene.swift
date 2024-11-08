@@ -13,17 +13,20 @@ import GameplayKit
 class IVGameScene: SKScene, SKPhysicsContactDelegate {
     
     weak var context: IVGameContext?                // get game-specific context
-    var player: IVShipNode?                           // store reference for (main) player model
                                                     // TODO: add/create references for all necessary elements/models
-    var background: IVBackgroundNode
-    var scrollBackground: IVBackgroundNode
     
     var gameState: IVGamePlayState?
+    var player: SKSpriteNode?                           // store reference for (main) player model
+    var background: SKSpriteNode?
+    
+    // time variables
+    private var lastUpdateTime: TimeInterval = 0
+    private var deltaTime: TimeInterval = 0
+    private var actionInterval: TimeInterval = 1.0
+    private var timeSinceLastAction: TimeInterval = 0
     
     init(context: IVGameContext, size: CGSize) {    // initializing (general)
         self.context = context                      // set game context
-        self.background = IVBackgroundNode()
-        self.scrollBackground = IVBackgroundNode()
         super.init(size: size)                      // initialize game screen size
     }
 
@@ -44,8 +47,6 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         }
 
         prepareGameContext()                        // helper method to setup based on context (BEFORE anything on screen)
-        prepareBackground()
-        prepareStartNodes()                         // helper method to start adding elements/models on the screen
         
         physicsWorld.contactDelegate = self         // initialize delegate for node physics
         gameState = IVGamePlayState(scene: self, context: context)
@@ -67,89 +68,35 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         context.configureStates()                               // configure each (starting) game state
     }
     
-    func prepareBackground() {
-        guard let context else {
-            return
-        }
-        // add background
-        background.setup(screenSize: size, layoutInfo: context.layoutInfo)
-        
-        addChild(background)
-        
-        // add a scrolling background
-        scrollBackground.setup(screenSize: size, layoutInfo: context.layoutInfo)
-        scrollBackground.background.position = CGPointMake(0, scrollBackground.background.size.height-1)
-        
-        addChild(scrollBackground)
-    }
-    
-    func prepareStartNodes() {
-        guard let context else {
-            return
-        }
-        
-        // get center position on the screen (to position the ship model)
-        // TODO: need not be centered at the start; discuss more about starting positions for initial elements/models
-        let center = CGPoint(x: size.width / 2.0,
-                             y: size.height / 6.0)  // **testing
-        
-        // create node object (to be added to the screen)
-        let player = IVShipNode()
-        player.setup(screenSize: size, layoutInfo: context.layoutInfo)
-        player.name = "playerNode"
-        player.position = center
-        player.zPosition = 2          // place behind other nodes (down the z-axis)
-        
-        // setup physics body (to check contact with enemy projectiles)
-        player.physicsBody = SKPhysicsBody(rectangleOf: player.ship.size)
-        player.physicsBody?.categoryBitMask = IVGameInfo.player
-        player.physicsBody?.contactTestBitMask = IVGameInfo.enemyProjectile
-        player.physicsBody?.collisionBitMask = IVGameInfo.none
-        player.physicsBody?.affectedByGravity = false           // handle repositioning manually
-
-        addChild(player)              // add node to the screen
-        self.player = player            // track reference
-        preparePlayerAnim()
-    }
-    
     override func update(_ currentTime: TimeInterval) {
-        // Set synced scroll movement (background shifts down, scrollBackground moves down in-place)
-        let backgroundNode = self.background.background
-        backgroundNode.position = CGPoint(
-            x: backgroundNode.position.x,
-            y: backgroundNode.position.y - (context?.layoutInfo.scrollSpeed)!
-        )
-        let scrollBackgroundNode = self.scrollBackground.background
-        scrollBackgroundNode.position = CGPoint(
-            x: scrollBackgroundNode.position.x,
-            y: scrollBackgroundNode.position.y - (context?.layoutInfo.scrollSpeed)!
-        )
-        
-        // Reset to beginning after ran through the background image height (to loop infinitely)
-        if backgroundNode.position.y < -backgroundNode.size.height {
-            backgroundNode.position = CGPoint(
-                x: backgroundNode.position.x,
-                y: scrollBackgroundNode.position.y + scrollBackgroundNode.size.height
-            )
-        }
-        if scrollBackgroundNode.position.y < -scrollBackgroundNode.size.height {
-            scrollBackgroundNode.position = CGPoint(
-                x: scrollBackgroundNode.position.x,
-                y: backgroundNode.position.y + backgroundNode.size.height
-            )
+        guard let context else {
+            return
         }
         
         // shoot projectiles (from player)
-        if(context?.stateMachine?.currentState is IVGamePlayState) {
-            gameState?.shootPlayerProjectiles()
-            gameState?.resetPlayerProjectiles()
+        if let currentState = context.stateMachine?.currentState as? IVGamePlayState {
+            print("came here")
             
-            if childNode(withName: "enemyNode") != nil {
-                gameState?.shootEnemyProjectiles()
-                gameState?.resetEnemyProjectiles()
-            } else {
-                gameState?.spawnEnemy()
+            // Calculate delta time
+            if lastUpdateTime == 0 {
+                lastUpdateTime = currentTime
             }
+            
+            deltaTime = currentTime - lastUpdateTime
+            lastUpdateTime = currentTime
+            
+            // Update time since last action
+            timeSinceLastAction += deltaTime
+            
+            // Check if it's time to perform the action
+            if timeSinceLastAction >= actionInterval {
+                gameState?.spawnProjectile()
+                timeSinceLastAction = 0 // Reset the timer
+            }
+            
+        }
+        if let currentState = context.stateMachine?.currentState as? IVMainMenuState {
+            currentState.randomizeDummyPlayerMovement()
         }
     
     }
@@ -181,47 +128,132 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         player?.run(SKAction.repeatForever(playerAction), withKey: "idleAnim")
     }
     
-    func didBegin(_ contact: SKPhysicsContact) {
-        guard let context else {
+    func scaleScoreLabel() {
+        guard let scene else {
             return
         }
-        let contactA = contact.bodyA
-        let contactB = contact.bodyB
-
-        // Player projectile hits enemy
-        if (contactA.categoryBitMask == IVGameInfo.playerProjectile && contactB.categoryBitMask == IVGameInfo.enemy) ||
-           (contactA.categoryBitMask == IVGameInfo.enemy && contactB.categoryBitMask == IVGameInfo.playerProjectile)
-        {
-            print("Enemy hit by player projectile")
-            
-            // remove enemy (with fade animation)
-            let fadeOutAction = SKAction.fadeOut(withDuration: 0.5)
-            let removeAction = SKAction.removeFromParent()
-            let collisionSequence = SKAction.sequence([fadeOutAction, removeAction])
-            
-            childNode(withName: "enemyNode")?.run(collisionSequence)        // reset enemy node
-            childNode(withName: "enemyLaser")?.run(collisionSequence)       // reset enemy projectile
-            
-            gameState?.enemyProjectile = nil    // reset reference to enemy projectile
-            
-            // update game score
-            context.gameInfo.score += 1
-            // update score label
-            gameState?.updateScore()
-        }
-
-        // Enemy projectile hits player
-        if (contactA.categoryBitMask == IVGameInfo.enemyProjectile && contactB.categoryBitMask == IVGameInfo.player) ||
-           (contactA.categoryBitMask == IVGameInfo.player && contactB.categoryBitMask == IVGameInfo.enemyProjectile)
-        {
-            print("Player hit by enemy projectile")
-            // update game score
-            context.gameInfo.health -= 1
-            // update score label
-            gameState?.updateHealth()
-            
+        if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
+            let scaleUp = SKAction.scale(to: 1.4, duration: 0.5)
+            let scaleDown = SKAction.scale(to: 1.0, duration: 0.5)
+            let scaleSequence = SKAction.sequence([scaleUp, scaleDown])
+            scoreLabel.run(scaleSequence)
         }
     }
+    
+    func didBegin(_ contact: SKPhysicsContact) {
+        print("in contact")
+        guard let scene, let context else {
+            return
+        }
+        
+        let contactA = contact.bodyA
+        let contactB = contact.bodyB
+        
+        guard let currentPhase = Phase.phase(for: background!.color) else {
+            print(background as Any)
+            print(gameState?.background as Any)
+            return
+        }
+        
+        let currentParticle = IVGameInfo.particleName[currentPhase]
+        let currentProjectileMask = IVGameInfo.projectileMask[currentParticle!]
+        //        let matchingProjectileMask = IVGameInfo.projectileMask[IVGameInfo.particleName[currentPhase!]!]
+        
+        //        let playerBody = contactA.categoryBitMask == IVGameInfo.player ? contactA : contactB
+        //        let projectileBody = contactA.categoryBitMask == currentProjectileMask! ? contactA : contactB
+        
+        
+        if (contactA.categoryBitMask == IVGameInfo.player && contactB.categoryBitMask == currentProjectileMask) ||
+            (contactA.categoryBitMask == currentProjectileMask && contactB.categoryBitMask == IVGameInfo.player) {
+            
+            // same colored
+//            guard let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode else {
+//                return
+//            }
+            context.gameInfo.score += 1
+            if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
+                scoreLabel.text = "Score: \(context.gameInfo.score)"
+            }
+            scaleScoreLabel()
+            
+            // Handle enemy hit by player projectile
+            print("hit same color projectile")
+            
+            if let projectile = (contactA.categoryBitMask == IVGameInfo.player) ? contactB.node : contactA.node {
+                // Remove projectile nodes
+                let fadeOutAction = SKAction.fadeOut(withDuration: 0.5)
+                let removeAction = SKAction.removeFromParent()
+                let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
+                projectile.run(removeSequence)
+            }
+        }
+        
+        if (contactA.categoryBitMask == IVGameInfo.player && contactB.categoryBitMask != currentProjectileMask) ||
+            (contactA.categoryBitMask != currentProjectileMask && contactB.categoryBitMask == IVGameInfo.player) {
+            
+            // hit different color projectile
+//            guard let scoreLabel = childNode(withName: "scoreNode") as? SKLabelNode else {
+//                return
+//            }
+            context.gameInfo.score -= 1
+            if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
+                scoreLabel.text = "Score: \(context.gameInfo.score)"
+            }
+            
+            // Handle enemy hit by player projectile
+            print("hit different color projectile")
+            
+            if let projectile = (contactA.categoryBitMask == IVGameInfo.player) ? contactB.node : contactA.node {
+                // Remove projectile nodes
+                let fadeOutAction = SKAction.fadeOut(withDuration: 0.5)
+                let removeAction = SKAction.removeFromParent()
+                let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
+                projectile.run(removeSequence)
+            }
+        }
+    }
+    
+//    func didBegin(_ contact: SKPhysicsContact) {
+//        guard let context else {
+//            return
+//        }
+//        let contactA = contact.bodyA
+//        let contactB = contact.bodyB
+//
+//        // Player projectile hits enemy
+//        if (contactA.categoryBitMask == IVGameInfo.playerProjectile && contactB.categoryBitMask == IVGameInfo.enemy) ||
+//           (contactA.categoryBitMask == IVGameInfo.enemy && contactB.categoryBitMask == IVGameInfo.playerProjectile)
+//        {
+//            print("Enemy hit by player projectile")
+//            
+//            // remove enemy (with fade animation)
+//            let fadeOutAction = SKAction.fadeOut(withDuration: 0.5)
+//            let removeAction = SKAction.removeFromParent()
+//            let collisionSequence = SKAction.sequence([fadeOutAction, removeAction])
+//            
+//            childNode(withName: "enemyNode")?.run(collisionSequence)        // reset enemy node
+//            childNode(withName: "enemyLaser")?.run(collisionSequence)       // reset enemy projectile
+//            
+//            gameState?.enemyProjectile = nil    // reset reference to enemy projectile
+//            
+//            // update game score
+//            context.gameInfo.score += 1
+//            // update score label
+//            gameState?.updateScore()
+//        }
+//
+//        // Enemy projectile hits player
+//        if (contactA.categoryBitMask == IVGameInfo.enemyProjectile && contactB.categoryBitMask == IVGameInfo.player) ||
+//           (contactA.categoryBitMask == IVGameInfo.player && contactB.categoryBitMask == IVGameInfo.enemyProjectile)
+//        {
+//            print("Player hit by enemy projectile")
+//            // update game score
+//            context.gameInfo.health -= 1
+//            // update score label
+//            gameState?.updateHealth()
+//            
+//        }
+//    }
     
     /* METHODS TO HANDLE NODE REPOSITION ON TOUCH */
     
