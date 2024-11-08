@@ -33,7 +33,7 @@ class IVGameOverState: GKState {
         print("did enter game over state")
         
         removeGamePlayNodes()
-        displayScore()
+//        displayScore()
     }
     func removeGamePlayNodes() {
         guard let scene else {
@@ -47,6 +47,7 @@ class IVGameOverState: GKState {
         scene.childNode(withName: "playerProjectile")?.run(removeSequence)
         scene.childNode(withName: "enemyProjectile")?.run(removeSequence)
         scene.childNode(withName: "healthNode")?.run(removeSequence)
+        scene.childNode(withName: "scoreNode")?.run(removeSequence)
         
         
         let center = CGPoint(x: scene.size.width / 2.0,
@@ -91,6 +92,7 @@ class IVGameOverState: GKState {
         let removeAction = SKAction.removeFromParent()
         let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
         scene.childNode(withName: "playAgainLabel")?.run(removeSequence)
+        scene.childNode(withName: "scoreLabel")?.run(removeSequence)
         
         resetScore()
         
@@ -116,8 +118,8 @@ class IVGameOverState: GKState {
         context.gameInfo.health = 100
         
         // update label text
-        let scoreLabel = scene.childNode(withName: "scoreNode") as! SKLabelNode
-        scoreLabel.run(SKAction.sequence([SKAction.group(groupActions), SKAction.removeFromParent()]))
+//        let scoreLabel = scene.childNode(withName: "scoreNode") as! SKLabelNode
+//        scoreLabel.run(SKAction.sequence([SKAction.group(groupActions), SKAction.removeFromParent()]))
         
     }
     

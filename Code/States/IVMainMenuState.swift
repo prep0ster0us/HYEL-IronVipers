@@ -3,6 +3,7 @@
 */
 
 import GameplayKit
+import SwiftUI
 
 class IVMainMenuState: GKState {
     
@@ -92,11 +93,12 @@ class IVMainMenuState: GKState {
         guard let scene else {
             return
         }
-        for _ in 0..<3 {
-            let dummy = SKSpriteNode(imageNamed: "spaceship")
+        for _ in 0..<12 {
+            let dummy = SKSpriteNode(imageNamed: "kirby")
+
             dummy.position = CGPoint(x: CGFloat.random(in: 5...scene.size.width-5.0),
                                      y: scene.size.height / 6.0)
-            dummy.setScale(1.8)
+            dummy.setScale(0.5)
             scene.addChild(dummy)
             dummyPlayers.append(dummy)
         }
@@ -110,8 +112,8 @@ class IVMainMenuState: GKState {
         guard let scene else {
             return SKAction()
         }
-        let randomX = CGFloat.random(in: -10...10)
-        let randomY = CGFloat.random(in: -10...10)
+        let randomX = CGFloat.random(in: -50...50)
+        let randomY = CGFloat.random(in: -100...100)
         
         // randomize movement
         let dx = randomX + (node.position.x)
@@ -120,13 +122,12 @@ class IVMainMenuState: GKState {
         let offsetX = (dx < 100) ? -randomX : ((dx > (scene.size.width)-100.0) ? -randomX : randomX)
         let offsetY = (dy < 100) ? -randomY : ((dy > (scene.size.height)-100.0) ? -randomY : randomY)
         
-        print("current: \(node.position.x) | random: \(randomX) | newPos: \(dx) | valid? : \(offsetX == randomX)")
-        
         let moveAction = SKAction.moveBy(x: offsetX,
                                          y: offsetY,
                                          duration: 3.0 )
         let waitAction = SKAction.wait(forDuration: 0.5)
         return SKAction.sequence([moveAction, waitAction])
+
     }
     
     func setupProjectiles() {
@@ -233,4 +234,11 @@ class IVMainMenuState: GKState {
         context?.stateMachine?.enter(IVGamePlayState.self)
     }
     
+}
+
+struct Prev2: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+            .ignoresSafeArea()
+    }
 }

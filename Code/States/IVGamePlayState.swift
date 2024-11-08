@@ -3,6 +3,7 @@
 */
 
 import GameplayKit
+import SwiftUI
 
 class IVGamePlayState: GKState {
     
@@ -41,33 +42,62 @@ class IVGamePlayState: GKState {
         setupBackground()
         setupScoreLabel()
         setupPlayer()
+    }
+    
+    override func willExit(to nextState: GKState) {
+        guard let scene else {
+            return
+        }
+        // remove filter and background
+        let fadeOutAction = SKAction.fadeOut(withDuration: 2.0)
+        let removeAction = SKAction.removeFromParent()
+        let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
         
+        scene.background?.run(removeSequence)
     }
     
     func setupBackground() {
         guard let scene else {
             return
         }
+        addBackgroundFilter()
         let randomPhase = Phase.allCases.randomElement()
         background = SKSpriteNode(color: randomPhase!.color, size: scene.size)
         background?.anchorPoint = CGPointZero
         background?.position = CGPointZero
         background?.zPosition = -2
-        background?.alpha = 0.2
+        background?.alpha = 0.4
         
         scene.addChild(background!)
         scene.background = background
         
         switchBackground()
     }
+    func addBackgroundFilter() {
+        guard let scene else {
+            return
+        }
+        if let _ = scene.childNode(withName: "filter") {
+            return
+        }
+        let filter = SKSpriteNode(color: .black, size: scene.size)
+        filter.name = "filter"
+        filter.position = CGPoint(x: scene.size.width / 2.0,
+                                  y: scene.size.height / 2.0 )
+        filter.alpha = 0.4
+        filter.zPosition = -1
+        scene.addChild(filter)
+    }
     func switchBackground() {
         let waitAction = SKAction.wait(forDuration: 3.0)
-        let changePhase = SKAction.run {
-            let currentPhase = Phase.phase(for: self.background!.color)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+        let changePhase = SKAction.run { [self] in
+            let currentPhase = Phase.phase(for: background!.color)
             let nextPhase = Phase.random(excluding: currentPhase!)
-            self.background!.color = nextPhase.color
+            background!.color = nextPhase.color
         }
-        let changeSequence = SKAction.sequence([waitAction, changePhase])
+        let fadeIn = SKAction.fadeIn(withDuration: 0.5)
+        let changeSequence = SKAction.sequence([waitAction, fadeOut, changePhase, fadeIn])
         background!.run(SKAction.repeatForever(changeSequence))
     }
     
@@ -75,6 +105,10 @@ class IVGamePlayState: GKState {
         guard let scene, let context else {
             return
         }
+        if let _ = scene.childNode(withName: "scoreNode") {
+            return
+        }
+        
         let scoreLabel = SKLabelNode(text: "Score: \(context.gameInfo.score)")
         scoreLabel.fontSize = 24
         scoreLabel.position = CGPoint(x: scene.size.width/6.0,
@@ -85,6 +119,7 @@ class IVGamePlayState: GKState {
         scoreLabel.name = "scoreNode"
         
         scene.addChild(scoreLabel)
+        
     }
     
     func spawnProjectile() {
@@ -106,12 +141,13 @@ class IVGamePlayState: GKState {
             // calculate angle of projectile path
             let dx = (exitPos.x > entryPos.x)  ? (exitPos.x - entryPos.x) : (entryPos.x - exitPos.x)
             let dy = (exitPos.y > entryPos.y)  ? (exitPos.y - entryPos.y) : (entryPos.y - exitPos.y)
-            let angle = atan2(dy, dx)       // TODO: need to fix
+            let angle = atan2(dx, dy)       // TODO: need to fix
             
             exp.position = entryPos
             exp.zPosition = 5
 //            exp.zRotation = angle
-            exp.emissionAngle = .pi - angle
+//            exp.emissionAngle = .pi - angle
+            exp.particleColor = randomParticle == "RedParticle" ? .red : (randomParticle == "GreenParticle" ? .green : .blue)
             
             // setup physics body (to check collision with enemy node)
             exp.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 25, height: 25))
@@ -122,7 +158,7 @@ class IVGamePlayState: GKState {
             
             scene.addChild(exp)
 
-            let moveAction = SKAction.move(to: exitPos, duration: 3.0)
+            let moveAction = SKAction.move(to: exitPos, duration: 1.5)
             let removeAction = SKAction.removeFromParent()
             let shootSequence = SKAction.sequence([moveAction, removeAction])
             
@@ -131,19 +167,19 @@ class IVGamePlayState: GKState {
     }
     
     func setupPlayer() {
-        guard let scene else {
+        guard let scene, let context else {
             return
         }
+        if let _ = scene.childNode(withName: "playerNode") {
+            return
+        }
+        
         // create node object (to be added to the screen)
-        let player = SKSpriteNode(imageNamed: "spaceship")
+        let player = context.gameInfo.player
         player.name = "playerNode"
         player.position = CGPoint(x: scene.size.width / 2.0,
                                   y: scene.size.height / 6.0)
-        player.setScale(2.0)
-//        player.size = CGSize(
-//            width : player.size.width/3.0,
-//            height: player.size.height/3.0
-//        )
+        player.setScale(0.4)
         player.zPosition = 4          // place behind other nodes (down the z-axis)
         
         guard let currentPhase = Phase.phase(for: background!.color) else {
@@ -216,11 +252,17 @@ class IVGamePlayState: GKState {
         guard let context else {
             return
         }
-        let scoreLabel = scene?.childNode(withName: "scoreNode") as! SKLabelNode
-        scoreLabel.text = "Score: \(context.gameInfo.score)"
+//        let scoreLabel = scene?.childNode(withName: "scoreNode") as! SKLabelNode
+//        scoreLabel.text = "Score: \(context.gameInfo.score)"
+        if context.gameInfo.score > context.gameInfo.transitionScore {
+            print("go into laser game")
+            context.stateMachine?.enter(IVLaserGameState.self)
+        }
+        if context.gameInfo.score < context.gameInfo.gameEndScore {
+            print("go into laser game")
+            context.stateMachine?.enter(IVGameOverState.self)
+        }
     }
-    
-    
     
     func spawnEnemy() {
         guard let scene, let context else {
@@ -614,3 +656,10 @@ class IVGamePlayState: GKState {
  
  
  */
+
+struct Prev1: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+//            .ignoresSafeArea()
+    }
+}

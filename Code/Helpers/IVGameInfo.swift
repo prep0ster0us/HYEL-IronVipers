@@ -14,6 +14,8 @@ struct IVGameInfo {
     var score = 0
     var health = 100
     var testHealth = 95
+    var gameEndScore = 0
+    var transitionScore = 2
     
     let bgColors: [SKColor] = [.blue, .purple, .orange, .red, .green]
     // TODO: expand to include all properties for the game session
@@ -27,9 +29,11 @@ struct IVGameInfo {
     static let greenProjectile: UInt32 = 0x1 << 2   // 4
     static let blueProjectile: UInt32 = 0x1 << 3    // 8
     
-    static let playerProjectile: UInt32 = 0x1 << 4 // 2
-    static let enemy: UInt32 = 0x1 << 5        // 4
-    static let enemyProjectile: UInt32 = 0x1 << 6 // 8
+    static let laser: UInt32 = 0x1 << 4             // 16
+    
+    static let playerProjectile: UInt32 = 0x1 << 5 // 2
+    static let enemy: UInt32 = 0x1 << 6        // 4
+    static let enemyProjectile: UInt32 = 0x1 << 7 // 8
     
     static let particleName = [
         Phase.RED   : "RedParticle",
@@ -41,6 +45,16 @@ struct IVGameInfo {
         "BlueParticle" : blueProjectile,
         "GreenParticle": greenProjectile
     ]
+    
+    let player = SKSpriteNode(imageNamed: "kirby")
+    
+}
+
+struct LaserNode {
+    var startNode : SKSpriteNode
+    var endNode   : SKSpriteNode
+    var dottedLine: SKShapeNode
+    var laserBeam : SKShapeNode
 }
 
 enum Phase : CaseIterable {

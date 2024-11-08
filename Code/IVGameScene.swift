@@ -25,6 +25,11 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
     private var actionInterval: TimeInterval = 1.0
     private var timeSinceLastAction: TimeInterval = 0
     
+    private var lastStateChangeTime: TimeInterval = 0
+    private var stateChangeDeltaTime: TimeInterval = 0
+    private let stateChangeInterval: TimeInterval = 15  // Change state every 5 seconds
+    private var timeSinceStateChangeAction: TimeInterval = 0
+    
     init(context: IVGameContext, size: CGSize) {    // initializing (general)
         self.context = context                      // set game context
         super.init(size: size)                      // initialize game screen size
@@ -49,7 +54,7 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         prepareGameContext()                        // helper method to setup based on context (BEFORE anything on screen)
         
         physicsWorld.contactDelegate = self         // initialize delegate for node physics
-        gameState = IVGamePlayState(scene: self, context: context)
+//        gameState = IVGamePlayState(scene: self, context: context)
     
         /* once everything setup; reference state machine and TRY to enter into a specific game state
          (for now, main menu state) */
@@ -73,9 +78,11 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             return
         }
         
+        // cycle through different obstacle course states
+//        cycleStates(currentTime)
+
         // shoot projectiles (from player)
         if let currentState = context.stateMachine?.currentState as? IVGamePlayState {
-            print("came here")
             
             // Calculate delta time
             if lastUpdateTime == 0 {
@@ -90,9 +97,10 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             
             // Check if it's time to perform the action
             if timeSinceLastAction >= actionInterval {
-                gameState?.spawnProjectile()
+                currentState.spawnProjectile()
                 timeSinceLastAction = 0 // Reset the timer
             }
+            currentState.updateScore()
             
         }
         if let currentState = context.stateMachine?.currentState as? IVMainMenuState {
@@ -102,6 +110,19 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
     }
     func getDistance(_ direction: String, _ distance: CGFloat) -> CGFloat {
         return direction.elementsEqual("left") ? -distance : distance
+    }
+    
+    func cycleToNextState() {
+        guard let context else { return }
+        // Get the current state and cycle to the next one
+        if context.stateMachine?.currentState is IVGamePlayState {
+            context.stateMachine?.enter(IVGamePlayState.self)
+        } else if context.stateMachine?.currentState is IVLaserGameState {
+            context.stateMachine?.enter(IVLaserGameState.self)
+        }
+//        else if stateMachine?.currentState is <third state> {
+//            stateMachine?.enter(IVGamePlayState.self) // Loop back to the first state
+//        }
     }
     
     func preparePlayerAnim() {
@@ -188,7 +209,26 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        if (contactA.categoryBitMask == IVGameInfo.player && contactB.categoryBitMask != currentProjectileMask) ||
+        else if (contactA.categoryBitMask == IVGameInfo.player && contactB.categoryBitMask == IVGameInfo.laser) ||
+                    (contactA.categoryBitMask == IVGameInfo.laser && contactB.categoryBitMask == IVGameInfo.player) {
+            // Handle player hit by laser
+            print("hit laser beam")
+            
+            context.gameInfo.score -= 10
+            if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
+                scoreLabel.text = "Score: \(context.gameInfo.score)"
+            }
+            // Create a shiver effect using small movement actions
+            let moveRight = SKAction.moveBy(x: 5, y: 0, duration: 0.05)
+            let moveLeft = SKAction.moveBy(x: -5, y: 0, duration: 0.05)
+            let shiverSequence = SKAction.sequence([moveRight, moveLeft, moveLeft, moveRight])
+            let shiverRepeat = SKAction.repeat(shiverSequence, count: 5)
+            
+            // Run the shiver action on the player node
+            player?.run(shiverRepeat)
+        }
+        
+        else if (contactA.categoryBitMask == IVGameInfo.player && contactB.categoryBitMask != currentProjectileMask) ||
             (contactA.categoryBitMask != currentProjectileMask && contactB.categoryBitMask == IVGameInfo.player) {
             
             // hit different color projectile
@@ -255,6 +295,25 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
 //        }
 //    }
     
+    func cycleStates(_ currentTime: TimeInterval) {
+        // Calculate delta time
+        if lastStateChangeTime == 0 {
+            lastStateChangeTime = currentTime
+        }
+
+        stateChangeDeltaTime = currentTime - lastStateChangeTime
+        lastStateChangeTime = currentTime
+
+        // Update time since last action
+        timeSinceStateChangeAction += stateChangeDeltaTime
+
+        // Check if it's time to perform the action
+        if timeSinceStateChangeAction >= stateChangeInterval {
+            cycleToNextState()
+            timeSinceStateChangeAction = 0 // Reset the timer
+        }
+    }
+    
     /* METHODS TO HANDLE NODE REPOSITION ON TOUCH */
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -271,6 +330,10 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             gamePlayState.handleTouch(touch)
         }
         
+        if let gamePlayState = context?.stateMachine?.currentState as? IVLaserGameState  {
+            gamePlayState.handleTouch(touch)
+        }
+        
         if let gamePlayState = context?.stateMachine?.currentState as? IVGameOverState  {
             gamePlayState.handleTouch(touch)
         }
@@ -282,6 +345,9 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if let gamePlayState = context?.stateMachine?.currentState as? IVGamePlayState  {
+            gamePlayState.handleTouch(touch)
+        }
+        if let gamePlayState = context?.stateMachine?.currentState as? IVLaserGameState  {
             gamePlayState.handleTouch(touch)
         }
     }
