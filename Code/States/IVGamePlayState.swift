@@ -32,6 +32,18 @@ class IVGamePlayState: GKState {
     /// ex: game-over state can be a result of time running out OR no more lives left.
     override func didEnter(from previousState: GKState?) {
         print("did enter main game state")
+        
+        //temp spawn enemies
+        /*
+        var xPercent = 0.25
+        while xPercent < 100.0 {
+            let enem = IVEnemyShipNode()
+            enem.setup(screenSize: scene!.size, layoutInfo: scene!.context!.layoutInfo)
+            enem.position = CGPoint(x: scene!.size.width * xPercent, y: scene!.size.height * 0.85)
+            scene?.enemies.append(enem)
+            xPercent += 0.25
+        }
+        */
     }
     
     func shootProjectile() {
@@ -81,7 +93,7 @@ class IVGamePlayState: GKState {
         guard let scene else {
             return
         }
-        print("touched main game state")
+        //print("touched main game state")
         // move player to touch location
         scene.ship?.position = touch.location(in: scene)
     }
@@ -90,7 +102,7 @@ class IVGamePlayState: GKState {
         guard let scene else {
             return
         }
-        print("touch moved")
+        //print("touch moved")
         // move player to touch location
         scene.ship?.position = touch.location(in: scene)
     }

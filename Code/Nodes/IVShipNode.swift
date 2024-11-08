@@ -29,8 +29,8 @@ class IVShipNode : SKNode {
         )
         
         //add physics
-        ship.physicsBody = SKPhysicsBody()
-        ship.physicsBody?.isDynamic = false
+        shipNode.physicsBody = SKPhysicsBody(texture: shipNode.texture!, size: shipNode.texture!.size())
+        shipNode.physicsBody?.isDynamic = false
         
         //projectile setup
         projectile.speed = 500

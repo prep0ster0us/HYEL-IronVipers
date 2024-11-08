@@ -13,6 +13,8 @@ import GameplayKit
 class IVGameScene: SKScene {
     
     weak var context: IVGameContext?                // get game-specific context
+    
+    var enemies: [IVEnemyShipNode] = []
     var ship: IVShipNode?                           // store reference for (main) player model
                                                     // TODO: add/create references for all necessary elements/models
     var background: IVBackgroundNode
@@ -139,7 +141,8 @@ class IVGameScene: SKScene {
             //player shoots projectile at given delay intervals
             //NOTE: logic for shooting will be moved to IVShipNode
             if ( currentTime - ship!.lastShotTime > ship!.shotDelay ) {
-                gameState?.shootProjectileV2(info: ship!.projectile, origin: ship?.position ?? CGPoint(x: 0, y: 0), direction: CGVector(dx: 0, dy: 1))
+                let firePoint: CGPoint = CGPoint(x: (ship?.position.x)!, y: (ship?.position.y)! + 4)
+                gameState?.shootProjectileV2(info: ship!.projectile, origin: firePoint, direction: CGVector(dx: 0, dy: 1))
                 ship?.lastShotTime = currentTime
             }
         }
