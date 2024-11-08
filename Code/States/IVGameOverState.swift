@@ -4,6 +4,7 @@
 */
 
 import GameplayKit
+import SwiftUI
 
 class IVGameOverState: GKState {
     
@@ -33,13 +34,13 @@ class IVGameOverState: GKState {
         print("did enter game over state")
         
         removeGamePlayNodes()
-//        displayScore()
+        displayScore()
     }
     func removeGamePlayNodes() {
         guard let scene else {
             return
         }
-        let fadeOutAction = SKAction.fadeOut(withDuration: 2.0)
+        let fadeOutAction = SKAction.fadeOut(withDuration: 1.0)
         let removeAction = SKAction.removeFromParent()
         let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
 
@@ -47,7 +48,7 @@ class IVGameOverState: GKState {
         scene.childNode(withName: "playerProjectile")?.run(removeSequence)
         scene.childNode(withName: "enemyProjectile")?.run(removeSequence)
         scene.childNode(withName: "healthNode")?.run(removeSequence)
-        scene.childNode(withName: "scoreNode")?.run(removeSequence)
+//        scene.childNode(withName: "scoreNode")?.run(removeSequence)
         
         
         let center = CGPoint(x: scene.size.width / 2.0,
@@ -71,13 +72,14 @@ class IVGameOverState: GKState {
         }
         let center = CGPoint(x: scene.size.width/2.0,
                              y: scene.size.height/3.0 )
-        let scaleAction = SKAction.scale(by: 2.0, duration: 3.0)
+        let scaleAction = SKAction.scale(by: 1.5, duration: 1.5)
         let moveAction = SKAction.move(to: center , duration: 2.0)
         var groupActions = Array<SKAction>()
         groupActions.append(scaleAction)
         groupActions.append(moveAction)
         
         scene.childNode(withName: "scoreNode")!.run(SKAction.group(groupActions))
+//        scene.childNode(withName: "healthNode")!.run(SKAction.group(groupActions))
     }
     
     func handleTouch(_ touch: UITouch) {
@@ -85,42 +87,53 @@ class IVGameOverState: GKState {
             return
         }
         print("Touch on game over state")
-        print("play again!")
         
         // remove nodes
-        let fadeOutAction = SKAction.fadeOut(withDuration: 2.0)
+        let fadeOutAction = SKAction.fadeOut(withDuration: 1.0)
         let removeAction = SKAction.removeFromParent()
         let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
         scene.childNode(withName: "playAgainLabel")?.run(removeSequence)
         scene.childNode(withName: "scoreLabel")?.run(removeSequence)
         
-        resetScore()
+        resetGameInfo()
         
-        context.stateMachine?.enter(IVGamePlayState.self)
+        let delay = SKAction.wait(forDuration: 1.5)
+        scene.run(delay) {
+            context.stateMachine?.enter(IVGamePlayState.self)
+        }
         
     }
     
-    func resetScore() {
+    func resetGameInfo() {
         guard let scene, let context else {
             return
         }
-        // scale and place back the score label (for "new" session)
-        let originalPosition = CGPoint(x: scene.size.width / 6.0,
-                             y: scene.size.height / 1.08)
-        let scaleAction = SKAction.scale(by: 2.0, duration: 3.0)
-        let moveAction = SKAction.move(to: originalPosition , duration: 2.0)
-        var groupActions = Array<SKAction>()
-        groupActions.append(scaleAction)
-        groupActions.append(moveAction)
         
         // reset previous score (and health)
         context.gameInfo.score = 0
         context.gameInfo.health = 100
         
-        // update label text
-//        let scoreLabel = scene.childNode(withName: "scoreNode") as! SKLabelNode
-//        scoreLabel.run(SKAction.sequence([SKAction.group(groupActions), SKAction.removeFromParent()]))
+        // scale and place back the score label (for "new" session)
+        let originalPosition = CGPoint(x: scene.size.width/5.8,
+                                       y: scene.size.height/1.06 )
+        let scaleAction = SKAction.scale(to: 1.0, duration: 0.2)
+        let moveAction = SKAction.move(to: originalPosition , duration: 0.5)
+        let fadeIn = SKAction.fadeIn(withDuration: 1.0)
+        var groupActions = Array<SKAction>()
+        groupActions.append(scaleAction)
+        groupActions.append(moveAction)
+        groupActions.append(fadeIn)
+
         
+        if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
+            let fadeOut = SKAction.fadeOut(withDuration: 1.0)
+            let update = SKAction.run {
+                scoreLabel.text = "Score: \(context.gameInfo.score)"
+            }
+            
+            let moveBack = SKAction.group(groupActions)
+            scoreLabel.run(SKAction.sequence([fadeOut, update, moveBack]))
+        }
     }
     
 }

@@ -9,6 +9,7 @@
 
 import SpriteKit
 import GameplayKit
+import SwiftUI
 
 class IVGameScene: SKScene, SKPhysicsContactDelegate {
     
@@ -101,7 +102,7 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
                 timeSinceLastAction = 0 // Reset the timer
             }
             currentState.updateScore()
-            
+            currentState.updateHealth()
         }
         if let currentState = context.stateMachine?.currentState as? IVMainMenuState {
             currentState.randomizeDummyPlayerMovement()
@@ -149,16 +150,16 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         player?.run(SKAction.repeatForever(playerAction), withKey: "idleAnim")
     }
     
-    func scaleScoreLabel() {
+    func scaleLabel(for label: SKLabelNode) {
         guard let scene else {
             return
         }
-        if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
-            let scaleUp = SKAction.scale(to: 1.4, duration: 0.5)
-            let scaleDown = SKAction.scale(to: 1.0, duration: 0.5)
-            let scaleSequence = SKAction.sequence([scaleUp, scaleDown])
-            scoreLabel.run(scaleSequence)
-        }
+        
+        let scaleUp = SKAction.scale(to: 1.2, duration: 0.2)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.2)
+        let scaleSequence = SKAction.sequence([scaleUp, scaleDown])
+        label.run(scaleSequence)
+        
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -178,11 +179,6 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         
         let currentParticle = IVGameInfo.particleName[currentPhase]
         let currentProjectileMask = IVGameInfo.projectileMask[currentParticle!]
-        //        let matchingProjectileMask = IVGameInfo.projectileMask[IVGameInfo.particleName[currentPhase!]!]
-        
-        //        let playerBody = contactA.categoryBitMask == IVGameInfo.player ? contactA : contactB
-        //        let projectileBody = contactA.categoryBitMask == currentProjectileMask! ? contactA : contactB
-        
         
         if (contactA.categoryBitMask == IVGameInfo.player && contactB.categoryBitMask == currentProjectileMask) ||
             (contactA.categoryBitMask == currentProjectileMask && contactB.categoryBitMask == IVGameInfo.player) {
@@ -194,8 +190,9 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             context.gameInfo.score += 1
             if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
                 scoreLabel.text = "Score: \(context.gameInfo.score)"
+                scaleLabel(for: scoreLabel)
             }
-            scaleScoreLabel()
+            
             
             // Handle enemy hit by player projectile
             print("hit same color projectile")
@@ -232,13 +229,16 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             (contactA.categoryBitMask != currentProjectileMask && contactB.categoryBitMask == IVGameInfo.player) {
             
             // hit different color projectile
-//            guard let scoreLabel = childNode(withName: "scoreNode") as? SKLabelNode else {
-//                return
-//            }
-            context.gameInfo.score -= 1
-            if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
-                scoreLabel.text = "Score: \(context.gameInfo.score)"
+            context.gameInfo.health -= context.gameInfo.projectilePenalty
+            if let healthLabel = childNode(withName: "healthNode") as? SKLabelNode {
+                healthLabel.text = "HP: \(context.gameInfo.health)"
+                scaleLabel(for: healthLabel)
             }
+//            context.gameInfo.score -= 1
+//            if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
+//                scoreLabel.text = "Score: \(context.gameInfo.score)"
+//                scaleLabel(for: scoreLabel)
+//            }
             
             // Handle enemy hit by player projectile
             print("hit different color projectile")
@@ -252,48 +252,6 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
     }
-    
-//    func didBegin(_ contact: SKPhysicsContact) {
-//        guard let context else {
-//            return
-//        }
-//        let contactA = contact.bodyA
-//        let contactB = contact.bodyB
-//
-//        // Player projectile hits enemy
-//        if (contactA.categoryBitMask == IVGameInfo.playerProjectile && contactB.categoryBitMask == IVGameInfo.enemy) ||
-//           (contactA.categoryBitMask == IVGameInfo.enemy && contactB.categoryBitMask == IVGameInfo.playerProjectile)
-//        {
-//            print("Enemy hit by player projectile")
-//            
-//            // remove enemy (with fade animation)
-//            let fadeOutAction = SKAction.fadeOut(withDuration: 0.5)
-//            let removeAction = SKAction.removeFromParent()
-//            let collisionSequence = SKAction.sequence([fadeOutAction, removeAction])
-//            
-//            childNode(withName: "enemyNode")?.run(collisionSequence)        // reset enemy node
-//            childNode(withName: "enemyLaser")?.run(collisionSequence)       // reset enemy projectile
-//            
-//            gameState?.enemyProjectile = nil    // reset reference to enemy projectile
-//            
-//            // update game score
-//            context.gameInfo.score += 1
-//            // update score label
-//            gameState?.updateScore()
-//        }
-//
-//        // Enemy projectile hits player
-//        if (contactA.categoryBitMask == IVGameInfo.enemyProjectile && contactB.categoryBitMask == IVGameInfo.player) ||
-//           (contactA.categoryBitMask == IVGameInfo.player && contactB.categoryBitMask == IVGameInfo.enemyProjectile)
-//        {
-//            print("Player hit by enemy projectile")
-//            // update game score
-//            context.gameInfo.health -= 1
-//            // update score label
-//            gameState?.updateHealth()
-//            
-//        }
-//    }
     
     func cycleStates(_ currentTime: TimeInterval) {
         // Calculate delta time
@@ -360,5 +318,12 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         if let gamePlayState = context?.stateMachine?.currentState as? IVGamePlayState  {
             gamePlayState.handleTouch(touch)
         }
+    }
+}
+
+struct Prev3: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+//            .ignoresSafeArea()
     }
 }

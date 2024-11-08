@@ -16,6 +16,7 @@ struct IVGameInfo {
     var testHealth = 95
     var gameEndScore = 0
     var transitionScore = 2
+    var projectilePenalty = 5
     
     let bgColors: [SKColor] = [.blue, .purple, .orange, .red, .green]
     // TODO: expand to include all properties for the game session

@@ -146,7 +146,7 @@ class IVLaserGameState: GKState {
         scene.addChild(endNode)
         
         // Slide in animation
-        let slideInAction = SKAction.fadeIn(withDuration: 0.5)
+        let slideInAction = SKAction.fadeIn(withDuration: 2.0)
         startNode.run(slideInAction)
         endNode.run(slideInAction)
         
@@ -192,7 +192,7 @@ class IVLaserGameState: GKState {
         }
         
         // add delay and switch to laser beam
-        let delay = SKAction.wait(forDuration: 2.0)
+        let delay = SKAction.wait(forDuration: 4.0)
         let transformToLaser = SKAction.run { [weak self] in
             self?.createLaserBeamAnimation(dots, startNode, endNode)
         }
@@ -299,13 +299,6 @@ class IVLaserGameState: GKState {
     }
     
     func handleTouchEnded(_ touch: UITouch) {
-//        print("touch ended")
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-//            .ignoresSafeArea()
+        print("touch ended")
     }
 }

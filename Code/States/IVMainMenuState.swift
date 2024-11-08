@@ -182,44 +182,6 @@ class IVMainMenuState: GKState {
         return colors.randomElement()!.withAlphaComponent(opacity)
     }
     
-    
-//    
-//    func prepareEnemyShiver() {
-//        guard let scene else {
-//            return
-//        }
-//        let dx = CGFloat.random(in: -5...5)
-//        let dy = CGFloat.random(in: -5...5)
-//        // Create a custom shiver action that moves the node up and down slightly
-//        let shiverUp = SKAction.moveBy(x: dx, y: -dy, duration: 0.6)
-//        let shiverDown = SKAction.moveBy(x: -dx, y: dy, duration: 0.6)
-//        let shiverSequence = SKAction.sequence([shiverUp, shiverDown])
-//        
-//        // Repeat this sequence indefinitely to create the shiver effect
-//        for i in 1...3 {
-//            scene.childNode(withName: "enemyNode\(i)")?.run(SKAction.repeatForever(shiverSequence))
-//        }
-//    }
-//    
-//    override func willExit(to nextState: GKState) {
-//        guard let scene else {
-//            return
-//        }
-//        // fade away (and remove) title label
-//        let fadeOutAction = SKAction.fadeOut(withDuration: 1.0)
-//        let removeAction = SKAction.removeFromParent()
-//        scene.childNode(withName: "titleNode")?.run(SKAction.sequence([fadeOutAction, removeAction]))
-//        for i in 1...3 {
-//            scene.childNode(withName: "enemyNode\(i)")?.run(SKAction.sequence([fadeOutAction, removeAction]))
-//        }
-//        
-//        // stop idle animation
-//        scene.childNode(withName: "playerNode")?.removeAction(forKey: "idleAnim")
-//        // reset player spaceship to center (pre-game start position)
-//        scene.childNode(withName: "playerNode")?.run(SKAction.moveTo(x: scene.size.width/2.0, duration: 1.5))
-//    }
-    
-    
     func handleTouch(_ touch: UITouch) {
         print("Touch triggered, Navigate to main game play state")
         
@@ -234,11 +196,4 @@ class IVMainMenuState: GKState {
         context?.stateMachine?.enter(IVGamePlayState.self)
     }
     
-}
-
-struct Prev2: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-            .ignoresSafeArea()
-    }
 }
