@@ -69,7 +69,7 @@ class IVColorWaveState: GKState {
         scene.addChild(background!)
         scene.background = background
         
-        switchBackground()
+//        switchBackground()
     }
     func addBackgroundFilter() {
         guard let scene else {
@@ -82,33 +82,23 @@ class IVColorWaveState: GKState {
         filter.name = "filter"
         filter.position = CGPoint(x: scene.size.width / 2.0,
                                   y: scene.size.height / 2.0 )
-        filter.alpha = 0.3
+        filter.alpha = 0.4
         filter.zPosition = -1
         scene.addChild(filter)
     }
     func switchBackground() {
-        let waitAction = SKAction.wait(forDuration: 4.0)
-        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+        let waitAction = SKAction.wait(forDuration: 0.1)
+        let fadeOut = SKAction.fadeOut(withDuration: 1.0)
         let changePhase = SKAction.run { [self] in
             let currentPhase = Phase.phase(for: background!.color)
             let nextPhase = Phase.random(excluding: currentPhase!)
             background!.color = nextPhase.color
         }
-        let fadeIn = SKAction.fadeIn(withDuration: 0.5)
+        let fadeIn = SKAction.fadeIn(withDuration: 0.2)
         let changeSequence = SKAction.sequence([waitAction, fadeOut, changePhase, fadeIn])
-        background!.run(SKAction.repeatForever(changeSequence))
+        background!.run(changeSequence)
     }
     
-    func addColorWave() {
-        guard let scene else { return }
-        let spawnWave = SKAction.run { [weak self] in
-            self?.createWave()
-        }
-        
-        let waveInterval = SKAction.wait(forDuration: 3.0)
-        let waveSequence = SKAction.sequence([spawnWave, waveInterval])
-        scene.run(SKAction.repeatForever(waveSequence), withKey: "spawnWaves")
-    }
     func spawnColorWave() {
         guard let scene, let context else { return }
         guard waveActive == false else {
@@ -122,7 +112,7 @@ class IVColorWaveState: GKState {
         var wavePos: [CGFloat] = []
         let waveCount = context.gameInfo.waveCount
         
-        for _ in 0..<waveCount {
+        for i in 0..<waveCount {
             // create random positions (without overlap)
             var randomY: CGFloat
             repeat {
@@ -131,8 +121,8 @@ class IVColorWaveState: GKState {
             wavePos.append(randomY)
             
             // random wave color = different from current background phase
-            let wavePhase = Phase.allCases.filter { $0 != Phase.phase(for: background!.color) }.randomElement()!
-            let waveColor = wavePhase.color
+//            let wavePhase = Phase.allCases.filter { $0 != Phase.phase(for: background!.color) }.randomElement()!
+            let waveColor = Phase.any().color
             
             // randonmize spawn (left or right)
             let randomNum = CGFloat.random(in: 0...1)
@@ -162,7 +152,15 @@ class IVColorWaveState: GKState {
                 waveStageCount += 1
                 checkIfEndStage()
             }
-            wave.run(SKAction.sequence([moveAction, removeAction, checkAction]))
+            if i == waveCount-1 {
+                let changeAction = SKAction.run {
+                    self.switchBackground()
+                }
+                wave.run(SKAction.sequence([moveAction, removeAction, checkAction, changeAction, SKAction.wait(forDuration: 1.0)]))
+            } else {
+                wave.run(SKAction.sequence([moveAction, removeAction, checkAction, SKAction.wait(forDuration: 1.0)]))
+            }
+        
             waveActive = true
         }
     }
@@ -318,5 +316,12 @@ class IVColorWaveState: GKState {
     
     func handleTouchEnded(_ touch: UITouch) {
         print("touch ended")
+    }
+}
+
+struct Prev3: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+            .ignoresSafeArea()
     }
 }

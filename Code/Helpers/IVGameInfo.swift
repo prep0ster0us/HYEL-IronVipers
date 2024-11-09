@@ -87,4 +87,7 @@ enum Phase : CaseIterable {
         let otherColors = allCases.filter { $0 != current }
         return otherColors.randomElement()!
     }
+    static func any() -> Phase {
+        return Phase.allCases.randomElement()!
+    }
 }
