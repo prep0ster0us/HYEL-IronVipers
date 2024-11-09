@@ -85,7 +85,7 @@ class IVGameOverState: GKState {
         }
         let center = CGPoint(x: scene.size.width/2.0,
                              y: scene.size.height/3.0 )
-        let scaleAction = SKAction.scale(by: 1.5, duration: 1.5)
+        let scaleAction = SKAction.scale(to: 1.5, duration: 1.5)
         let moveAction = SKAction.move(to: center , duration: 2.0)
         var groupActions = Array<SKAction>()
         groupActions.append(scaleAction)

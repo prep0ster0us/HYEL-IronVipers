@@ -84,6 +84,8 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
 
         if let currentState = context.stateMachine?.currentState as? IVMainMenuState {
             currentState.randomizeDummyPlayerMovement()
+        } else if let _ = context.stateMachine?.currentState as? IVGameOverState {
+            
         } else {
             
             // Calculate delta time
@@ -302,6 +304,9 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         if let healthLabel = childNode(withName: "healthNode") as? SKLabelNode {
             healthLabel.text = "HP: \(context.gameInfo.health)"
             scaleLabel(for: healthLabel)
+        }
+        if context.gameInfo.health <= context.gameInfo.testHealth {
+            context.stateMachine?.enter(IVGameOverState.self)
         }
     }
     func updateScore(reward: Int) {
