@@ -15,6 +15,10 @@ struct IVGameInfo {
     var health = 100
     var testHealth = 95
     
+    //laser info
+    var laserCooldown: CGFloat = 2
+    var curLaserCooldown: CGFloat = 0
+    
     let bgColors: [SKColor] = [.blue, .purple, .orange, .red, .green]
     // TODO: expand to include all properties for the game session
     

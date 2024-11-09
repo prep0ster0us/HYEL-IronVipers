@@ -130,6 +130,21 @@ class IVGamePlayState: GKState {
         }
     }
     
+    
+    func spawnLaser(shotDelay: CGFloat) {
+        guard let scene else {
+            return
+        }
+        
+        let laser = IVLaserEntity(scene: scene, delay: shotDelay)
+        let startY = CGFloat.random(in: 25...(scene.size.height-25))
+        let angle = startY > scene.size.height / 2 ? CGFloat.random(in: -20...70) : CGFloat.random(in: -70...20)
+        laser.spriteNode.position = CGPoint(x: scene.size.width / 2, y: startY)
+        laser.spriteNode.zRotation = angle * (.pi / 180)
+        scene.addChild(laser.spriteNode)
+    }
+    
+    
     func setupPlayer() {
         guard let scene else {
             return

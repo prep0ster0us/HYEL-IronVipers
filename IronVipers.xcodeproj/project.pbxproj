@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C6C38932CDE1E93007C7037 /* IVLaserEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6C38922CDE1E93007C7037 /* IVLaserEntity.swift */; };
 		C3363C342CD50DA70006725D /* IVGameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3363C332CD50DA70006725D /* IVGameContext.swift */; };
 		C3363C362CD50DB20006725D /* IVGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3363C352CD50DB20006725D /* IVGameScene.swift */; };
 		C3363C382CD510690006725D /* IVGameInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3363C372CD510690006725D /* IVGameInfo.swift */; };
@@ -32,6 +33,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0C6C38922CDE1E93007C7037 /* IVLaserEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVLaserEntity.swift; sourceTree = "<group>"; };
 		C3363C332CD50DA70006725D /* IVGameContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVGameContext.swift; sourceTree = "<group>"; };
 		C3363C352CD50DB20006725D /* IVGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVGameScene.swift; sourceTree = "<group>"; };
 		C3363C372CD510690006725D /* IVGameInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVGameInfo.swift; sourceTree = "<group>"; };
@@ -68,6 +70,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0C6C38912CDE1E7A007C7037 /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				0C6C38922CDE1E93007C7037 /* IVLaserEntity.swift */,
+			);
+			path = Entities;
+			sourceTree = "<group>";
+		};
 		C3363C2F2CD50D220006725D /* States */ = {
 			isa = PBXGroup;
 			children = (
@@ -148,6 +158,7 @@
 		C3D35F542CCDD05300BC50A2 /* Code */ = {
 			isa = PBXGroup;
 			children = (
+				0C6C38912CDE1E7A007C7037 /* Entities */,
 				C3363C2F2CD50D220006725D /* States */,
 				C3363C302CD50D290006725D /* Nodes */,
 				C3363C312CD50D440006725D /* Models */,
@@ -262,6 +273,7 @@
 				C3D35F412CCDCB4900BC50A2 /* ContentView.swift in Sources */,
 				C3363C402CD52AC90006725D /* IVBackgroundNode.swift in Sources */,
 				C3363C382CD510690006725D /* IVGameInfo.swift in Sources */,
+				0C6C38932CDE1E93007C7037 /* IVLaserEntity.swift in Sources */,
 				C3363C3A2CD510760006725D /* IVLayoutInfo.swift in Sources */,
 				C3363C342CD50DA70006725D /* IVGameContext.swift in Sources */,
 				C3D35F3F2CCDCB4900BC50A2 /* IronVipersApp.swift in Sources */,

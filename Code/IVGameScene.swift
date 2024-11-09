@@ -75,7 +75,7 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         
         // shoot projectiles (from player)
         if let currentState = context.stateMachine?.currentState as? IVGamePlayState {
-            print("came here")
+            //print("came here")
             
             // Calculate delta time
             if lastUpdateTime == 0 {
@@ -94,6 +94,11 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
                 timeSinceLastAction = 0 // Reset the timer
             }
             
+            //chance to spawn laser
+            if CGFloat.random(in: 0...100) > 70 && currentTime - context.gameInfo.curLaserCooldown > context.gameInfo.laserCooldown {
+                gameState?.spawnLaser(shotDelay: 5)
+                context.gameInfo.curLaserCooldown = currentTime
+            }
         }
         if let currentState = context.stateMachine?.currentState as? IVMainMenuState {
             currentState.randomizeDummyPlayerMovement()
