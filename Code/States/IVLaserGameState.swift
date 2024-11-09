@@ -38,17 +38,12 @@ class IVLaserGameState: GKState {
     /// ex: game-over state can be a result of time running out OR no more lives left.
     override func didEnter(from previousState: GKState?) {
         print("did enter laser game state")
-        guard let scene else { return }
         
 //        setupPlayer()
 //        spawnLaserNodes()
         setupBackground()
-        
-        if let _ = context?.stateMachine?.currentState as? IVLaserGameState {
-            //        // Schedule laser pairs to spawn every few seconds
-            showEntryLabel()
-            
-        }
+        showEntryLabel()
+
     }
     override func willExit(to nextState: GKState) {
         guard let scene else {
@@ -282,8 +277,41 @@ class IVLaserGameState: GKState {
         
         // Run the pop-up sequence on the label
         label.run(popupSequence) {
+            let delay = SKAction.wait(forDuration: 0.5)
+            let show = SKAction.run {
+                self.showNextGameLabel()
+            }
+            scene.run(SKAction.sequence([delay, show]))
+        }
+    }
+    func showNextGameLabel() {
+        guard let scene, let context else { return }
+        // Create the SKLabelNode for the pop-up
+        let label = SKLabelNode(text: "Survive the waves!")
+        label.fontSize = 36
+        label.fontName = "AmericanTypewriter-Bold"
+        label.fontColor = .yellow
+        label.position = CGPoint(x: scene.size.width / 2.0,
+                                 y: scene.size.height / 2.0 )
+        label.alpha = 0  // Start invisible
+        label.setScale(0)  // Start at zero scale for pop-up effect
+        scene.addChild(label)
+        
+        // Define actions: fade in, scale up (pop-up effect), wait, and fade out
+        let fadeIn = SKAction.fadeIn(withDuration: 0.2)
+        let scaleUp = SKAction.scale(to: 1.2, duration: 0.2)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
+        let wait = SKAction.wait(forDuration: 2.0)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.2)
+        let removeLabel = SKAction.removeFromParent()
+        
+        // Combine actions in sequence
+        let popupSequence = SKAction.sequence([fadeIn, scaleUp, scaleDown, wait, fadeOut, removeLabel])
+        
+        // Run the pop-up sequence on the label
+        label.run(popupSequence) {
             // Transition to the next game state after the label disappears
-            context.stateMachine?.enter(IVGamePlayState.self)
+            context.stateMachine?.enter(IVColorWaveState.self)
         }
     }
     

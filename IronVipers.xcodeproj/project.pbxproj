@@ -14,6 +14,8 @@
 		C3363C3C2CD510930006725D /* IVShipNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3363C3B2CD510930006725D /* IVShipNode.swift */; };
 		C3363C3E2CD5123A0006725D /* IVGameIdleState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3363C3D2CD5123A0006725D /* IVGameIdleState.swift */; };
 		C3363C402CD52AC90006725D /* IVBackgroundNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3363C3F2CD52AC90006725D /* IVBackgroundNode.swift */; };
+		C36FBF3A2CDEEB1B00F3678B /* IVFollowPathState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36FBF392CDEEB1B00F3678B /* IVFollowPathState.swift */; };
+		C36FBF3C2CDEF1D500F3678B /* IVColorWaveState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36FBF3B2CDEF1D500F3678B /* IVColorWaveState.swift */; };
 		C3C5619D2CD925B3000D9F77 /* IVMainMenuState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C5619C2CD925B3000D9F77 /* IVMainMenuState.swift */; };
 		C3C5619F2CD926A2000D9F77 /* IVGamePlayState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C5619E2CD926A2000D9F77 /* IVGamePlayState.swift */; };
 		C3C561A12CD9276F000D9F77 /* IVGameOverState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C561A02CD9276F000D9F77 /* IVGameOverState.swift */; };
@@ -40,6 +42,8 @@
 		C3363C3B2CD510930006725D /* IVShipNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVShipNode.swift; sourceTree = "<group>"; };
 		C3363C3D2CD5123A0006725D /* IVGameIdleState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVGameIdleState.swift; sourceTree = "<group>"; };
 		C3363C3F2CD52AC90006725D /* IVBackgroundNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVBackgroundNode.swift; sourceTree = "<group>"; };
+		C36FBF392CDEEB1B00F3678B /* IVFollowPathState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVFollowPathState.swift; sourceTree = "<group>"; };
+		C36FBF3B2CDEF1D500F3678B /* IVColorWaveState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVColorWaveState.swift; sourceTree = "<group>"; };
 		C3C5619C2CD925B3000D9F77 /* IVMainMenuState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVMainMenuState.swift; sourceTree = "<group>"; };
 		C3C5619E2CD926A2000D9F77 /* IVGamePlayState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVGamePlayState.swift; sourceTree = "<group>"; };
 		C3C561A02CD9276F000D9F77 /* IVGameOverState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVGameOverState.swift; sourceTree = "<group>"; };
@@ -78,6 +82,8 @@
 				C3C5619E2CD926A2000D9F77 /* IVGamePlayState.swift */,
 				C3C561A02CD9276F000D9F77 /* IVGameOverState.swift */,
 				C3F5FD6D2CDDBA940017B838 /* IVLaserGameState.swift */,
+				C36FBF392CDEEB1B00F3678B /* IVFollowPathState.swift */,
+				C36FBF3B2CDEF1D500F3678B /* IVColorWaveState.swift */,
 			);
 			path = States;
 			sourceTree = "<group>";
@@ -255,6 +261,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C3C5619D2CD925B3000D9F77 /* IVMainMenuState.swift in Sources */,
+				C36FBF3C2CDEF1D500F3678B /* IVColorWaveState.swift in Sources */,
 				C3363C3E2CD5123A0006725D /* IVGameIdleState.swift in Sources */,
 				C3F5FD6E2CDDBA940017B838 /* IVLaserGameState.swift in Sources */,
 				C3363C3C2CD510930006725D /* IVShipNode.swift in Sources */,
@@ -264,6 +271,7 @@
 				C3C561A12CD9276F000D9F77 /* IVGameOverState.swift in Sources */,
 				C3363C362CD50DB20006725D /* IVGameScene.swift in Sources */,
 				C3D35F412CCDCB4900BC50A2 /* ContentView.swift in Sources */,
+				C36FBF3A2CDEEB1B00F3678B /* IVFollowPathState.swift in Sources */,
 				C3363C402CD52AC90006725D /* IVBackgroundNode.swift in Sources */,
 				C3363C382CD510690006725D /* IVGameInfo.swift in Sources */,
 				C3363C3A2CD510760006725D /* IVLayoutInfo.swift in Sources */,

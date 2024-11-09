@@ -13,12 +13,17 @@ import SpriteKit
 struct IVGameInfo {
     var score = 0
     var health = 100
-    var testHealth = 95
+    var testHealth = 0
     var gameEndScore = 0
-    var transitionScore = 2
+    var transitionScore = 1
     var projectilePenalty = 5
     var laserPenalty = 10
     var laserReward = 5
+    var wavePenalty = 3
+    var waveReward = 5
+    var waveCount = 5
+    var waveStages = 3
+    var pathProximity: CGFloat = 30.0
     
     let bgColors: [SKColor] = [.blue, .purple, .orange, .red, .green]
     // TODO: expand to include all properties for the game session

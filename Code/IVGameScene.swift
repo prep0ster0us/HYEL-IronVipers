@@ -107,6 +107,34 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         if let currentState = context.stateMachine?.currentState as? IVMainMenuState {
             currentState.randomizeDummyPlayerMovement()
         }
+        if let currentState = context.stateMachine?.currentState as? IVFollowPathState {
+            currentState.detectPlayerPosition()
+        }
+        if let currentState = context.stateMachine?.currentState as? IVColorWaveState {
+//            if currentState.generateWave {
+//                currentState.spawnColorWave()
+//            }
+            // Calculate delta time
+            if lastUpdateTime == 0 {
+                lastUpdateTime = currentTime
+            }
+            
+            deltaTime = currentTime - lastUpdateTime
+            lastUpdateTime = currentTime
+            
+            // Update time since last action
+            timeSinceLastAction += deltaTime
+            
+            // Check if it's time to perform the action
+            if timeSinceLastAction >= actionInterval {
+                currentState.spawnColorWave()
+                timeSinceLastAction = 0 // Reset the timer
+            }
+            currentState.detectPlayerContact()
+            
+            currentState.updateHealth()
+//            currentState.checkIfEndStage()
+        }
     
     }
     func getDistance(_ direction: String, _ distance: CGFloat) -> CGFloat {
@@ -119,11 +147,10 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         if context.stateMachine?.currentState is IVGamePlayState {
             context.stateMachine?.enter(IVLaserGameState.self)
         } else if context.stateMachine?.currentState is IVLaserGameState {
-            context.stateMachine?.enter(IVGamePlayState.self)
+            context.stateMachine?.enter(IVFollowPathState.self)
+        } else if context.stateMachine?.currentState is IVFollowPathState {
+            context.stateMachine?.enter(IVGamePlayState.self) // Loop back to the first state
         }
-//        else if stateMachine?.currentState is <third state> {
-//            stateMachine?.enter(IVGamePlayState.self) // Loop back to the first state
-//        }
     }
     
     func preparePlayerAnim() {
@@ -151,10 +178,6 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func scaleLabel(for label: SKLabelNode) {
-        guard let scene else {
-            return
-        }
-        
         let scaleUp = SKAction.scale(to: 1.2, duration: 0.2)
         let scaleDown = SKAction.scale(to: 1.0, duration: 0.2)
         let scaleSequence = SKAction.sequence([scaleUp, scaleDown])
@@ -310,6 +333,14 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         if let gamePlayState = context?.stateMachine?.currentState as? IVGameOverState  {
             gamePlayState.handleTouch(touch)
         }
+        
+        if let gamePlayState = context?.stateMachine?.currentState as? IVFollowPathState  {
+            gamePlayState.handleTouch(touch)
+        }
+        
+        if let gamePlayState = context?.stateMachine?.currentState as? IVColorWaveState  {
+            gamePlayState.handleTouch(touch)
+        }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -318,10 +349,16 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if let gamePlayState = context?.stateMachine?.currentState as? IVGamePlayState  {
-            gamePlayState.handleTouch(touch)
+            gamePlayState.handleTouchMoved(touch)
         }
         if let gamePlayState = context?.stateMachine?.currentState as? IVLaserGameState  {
-            gamePlayState.handleTouch(touch)
+            gamePlayState.handleTouchMoved(touch)
+        }
+        if let gamePlayState = context?.stateMachine?.currentState as? IVFollowPathState  {
+            gamePlayState.handleTouchMoved(touch)
+        }
+        if let gamePlayState = context?.stateMachine?.currentState as? IVColorWaveState  {
+            gamePlayState.handleTouchMoved(touch)
         }
     }
     
@@ -333,12 +370,5 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         if let gamePlayState = context?.stateMachine?.currentState as? IVGamePlayState  {
             gamePlayState.handleTouch(touch)
         }
-    }
-}
-
-struct Prev3: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-//            .ignoresSafeArea()
     }
 }
