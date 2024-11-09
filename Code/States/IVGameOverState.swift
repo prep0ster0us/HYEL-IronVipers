@@ -33,8 +33,21 @@ class IVGameOverState: GKState {
     override func didEnter(from previousState: GKState?) {
         print("did enter game over state")
         
+        addBackgroundFilter()
         removeGamePlayNodes()
         displayScore()
+    }
+    func addBackgroundFilter() {
+        guard let scene else {
+            return
+        }
+        let filter = SKSpriteNode(color: .black, size: scene.size)
+        filter.name = "gameOverFilter"
+        filter.position = CGPoint(x: scene.size.width / 2.0,
+                                  y: scene.size.height / 2.0 )
+        filter.alpha = 0.5
+        filter.zPosition = -1
+        scene.addChild(filter)
     }
     func removeGamePlayNodes() {
         guard let scene else {
@@ -60,7 +73,7 @@ class IVGameOverState: GKState {
         playAgainLabel.name = "playAgainLabel"
         playAgainLabel.position = CGPoint(x: scene.size.width/2.0,
                                           y: scene.size.height/1.2 )
-        playAgainLabel.zPosition = 4    // on top of scene
+        playAgainLabel.zPosition = 2    // on top of scene
         playAgainLabel.fontSize = 32
         
         scene.addChild(playAgainLabel)
@@ -94,6 +107,7 @@ class IVGameOverState: GKState {
         let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
         scene.childNode(withName: "playAgainLabel")?.run(removeSequence)
         scene.childNode(withName: "scoreLabel")?.run(removeSequence)
+        scene.childNode(withName: "gameOverFilter")?.run(removeSequence)
         
         resetGameInfo()
         

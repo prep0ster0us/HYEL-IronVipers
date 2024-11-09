@@ -117,7 +117,7 @@ class IVGamePlayState: GKState {
         scoreLabel.position = CGPoint(x: scene.size.width/6.0,
                                       y: scene.size.height/1.06 )
         scoreLabel.fontColor = .white
-        scoreLabel.zPosition = -1
+        scoreLabel.zPosition = 1
         scoreLabel.fontName = "AvenirNext-Bold"
         scoreLabel.name = "scoreNode"
         scoreLabel.alpha = 0.0
@@ -156,7 +156,7 @@ class IVGamePlayState: GKState {
         player.position = CGPoint(x: scene.size.width / 2.0,
                                   y: scene.size.height / 6.0)
         player.setScale(0.4)
-        player.zPosition = 4          // place behind other nodes (down the z-axis)
+        player.zPosition = 3          // place behind other nodes (down the z-axis)
         
         guard let currentPhase = Phase.phase(for: background!.color) else {
             return
@@ -229,7 +229,7 @@ class IVGamePlayState: GKState {
             let angle = atan2(dx, dy)       // TODO: need to fix
             
             exp.position = entryPos
-            exp.zPosition = 5
+            exp.zPosition = 3
 //            exp.zRotation = angle
             exp.emissionAngle = .pi - angle
             exp.particleColor = randomParticle == "RedParticle" ? .red : (randomParticle == "GreenParticle" ? .green : .blue)
