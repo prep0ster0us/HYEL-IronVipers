@@ -82,7 +82,6 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         // cycle through different obstacle course states
 //        cycleStates(currentTime)
 
-        updateHealth()
         if let currentState = context.stateMachine?.currentState as? IVMainMenuState {
             currentState.randomizeDummyPlayerMovement()
         } else {
@@ -119,16 +118,16 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         }
     
     }
-    func updateHealth() {
-        guard let context else { return }
-        if let healthLabel = childNode(withName: "healthNode") as? SKLabelNode {
-            healthLabel.text = "HP: \(context.gameInfo.health)"
-            
-            if context.gameInfo.health < context.gameInfo.testHealth {
-                context.stateMachine?.enter(IVGameOverState.self)
-            }
-        }
-    }
+//    func updateHealth() {
+//        guard let context else { return }
+//        if let healthLabel = childNode(withName: "healthNode") as? SKLabelNode {
+//            healthLabel.text = "HP: \(context.gameInfo.health)"
+//            
+//            if context.gameInfo.health < context.gameInfo.testHealth {
+//                context.stateMachine?.enter(IVGameOverState.self)
+//            }
+//        }
+//    }
     
     func spawnProjectile() {
         // create a projectile node
@@ -239,26 +238,18 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         if (contactA.categoryBitMask == IVGameInfo.player && contactB.categoryBitMask == currentProjectileMask) ||
             (contactA.categoryBitMask == currentProjectileMask && contactB.categoryBitMask == IVGameInfo.player) {
             
-            // same colored
-//            guard let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode else {
-//                return
-//            }
-            context.gameInfo.score += 1
+            // Handle hit same colored projectile
+            print("hit same color projectile")
+            
+            updateScore(reward: 1)
+            // update local stage score
             if let currentState = context.stateMachine?.currentState as? IVGamePlayState {
                 currentState.localScore += 1
             }
-            if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
-                scoreLabel.text = "Score: \(context.gameInfo.score)"
-                scaleLabel(for: scoreLabel)
-            }
-            
-            
-            // Handle enemy hit by player projectile
-            print("hit same color projectile")
             
             if let projectile = (contactA.categoryBitMask == IVGameInfo.player) ? contactB.node : contactA.node {
                 // Remove projectile nodes
-                let fadeOutAction = SKAction.fadeOut(withDuration: 0.5)
+                let fadeOutAction = SKAction.fadeOut(withDuration: 0.3)
                 let removeAction = SKAction.removeFromParent()
                 let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
                 projectile.run(removeSequence)
@@ -270,13 +261,9 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             // Handle player hit by laser
             print("hit laser beam")
             
-//            context.gameInfo.score -= 10
-//            if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
-//                scoreLabel.text = "Score: \(context.gameInfo.score)"
-//            }
             // Create a shiver effect using small movement actions
-            let moveRight = SKAction.moveBy(x: 5, y: 0, duration: 0.05)
-            let moveLeft = SKAction.moveBy(x: -5, y: 0, duration: 0.05)
+            let moveRight = SKAction.moveBy(x: 8, y: 0, duration: 0.05)
+            let moveLeft = SKAction.moveBy(x: -8, y: 0, duration: 0.05)
             let shiverSequence = SKAction.sequence([moveRight, moveLeft, moveLeft, moveRight])
             let shiverRepeat = SKAction.repeat(shiverSequence, count: 5)
             
@@ -288,28 +275,14 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
                 currentState.isHitByLaser = true
             }
             
-            // update health
-            context.gameInfo.health -= context.gameInfo.laserPenalty
-            if let healthLabel = childNode(withName: "healthNode") as? SKLabelNode {
-                healthLabel.text = "HP: \(context.gameInfo.health)"
-                scaleLabel(for: healthLabel)
-            }
+            updateHealth(penalty: context.gameInfo.laserPenalty)
         }
         
         else if (contactA.categoryBitMask == IVGameInfo.player && contactB.categoryBitMask != currentProjectileMask) ||
             (contactA.categoryBitMask != currentProjectileMask && contactB.categoryBitMask == IVGameInfo.player) {
             
             // hit different color projectile
-            context.gameInfo.health -= context.gameInfo.projectilePenalty
-            if let healthLabel = childNode(withName: "healthNode") as? SKLabelNode {
-                healthLabel.text = "HP: \(context.gameInfo.health)"
-                scaleLabel(for: healthLabel)
-            }
-//            context.gameInfo.score -= 1
-//            if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
-//                scoreLabel.text = "Score: \(context.gameInfo.score)"
-//                scaleLabel(for: scoreLabel)
-//            }
+            updateHealth(penalty: context.gameInfo.projectilePenalty)
             
             // Handle enemy hit by player projectile
             print("hit different color projectile")
@@ -323,6 +296,23 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
     }
+    func updateHealth(penalty: Int) {
+        guard let context else { return }
+        context.gameInfo.health -= penalty
+        if let healthLabel = childNode(withName: "healthNode") as? SKLabelNode {
+            healthLabel.text = "HP: \(context.gameInfo.health)"
+            scaleLabel(for: healthLabel)
+        }
+    }
+    func updateScore(reward: Int) {
+        guard let context else { return }
+        context.gameInfo.score += reward
+        if let scoreLabel = childNode(withName: "scoreNode") as? SKLabelNode {
+            scoreLabel.text = "Score: \(context.gameInfo.score)"
+            scaleLabel(for: scoreLabel)
+        }
+    }
+    
     
     func cycleStates(_ currentTime: TimeInterval) {
         // Calculate delta time

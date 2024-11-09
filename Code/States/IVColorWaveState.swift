@@ -146,24 +146,7 @@ class IVColorWaveState: GKState {
             scoreLabel.text = "Score: \(context.gameInfo.score)"
         }
     }
-    func updateHealth() {
-        guard let context else {
-            return
-        }
-        if context.gameInfo.health <= context.gameInfo.testHealth {
-            print("no HP left")
-            context.stateMachine?.enter(IVGameOverState.self)
-        }
-        // TODO: update HP based on wave color - exempt background-colored waves
-//        else {
-//            // update health
-//            context.gameInfo.health -= context.gameInfo.wavePenalty
-//            if let healthLabel = scene.childNode(withName: "healthNode") as? SKLabelNode {
-//                healthLabel.text = "HP: \(context.gameInfo.health)"
-//                scaleLabel(for: healthLabel)
-//            }
-//        }
-    }
+    
     
     func displayStageCleared() {
         guard let scene, let context else { return }
@@ -212,18 +195,34 @@ class IVColorWaveState: GKState {
     func playerHitByWave() {
         guard let scene, let context else { return }
         // Decrease HP only if the player isn't already in the wave
-        context.gameInfo.health -= context.gameInfo.wavePenalty
-        if let healthLabel = scene.childNode(withName: "healthNode") as? SKLabelNode {
-            healthLabel.text = "HP: \(context.gameInfo.health)"
-        }
+        updateHealth(penalty: context.gameInfo.wavePenalty)
         
-        // Optional: Add a flash effect on the player when hit
+        // flash player model (when hit)
         let flash = SKAction.sequence([SKAction.fadeOut(withDuration: 0.1), SKAction.fadeIn(withDuration: 0.1)])
         scene.player!.run(SKAction.repeat(flash, count: 3))
 
         if context.gameInfo.health < context.gameInfo.testHealth {
+            print("no HP left")
             context.stateMachine?.enter(IVGameOverState.self)
         }
+    }
+    func updateHealth(penalty: Int) {
+        guard let scene, let context else {
+            return
+        }
+        context.gameInfo.health -= penalty
+        if let healthLabel = scene.childNode(withName: "healthNode") as? SKLabelNode {
+            healthLabel.text = "HP: \(context.gameInfo.health)"
+        }
+        // TODO: update HP based on wave color - exempt background-colored waves
+//        else {
+//            // update health
+//            context.gameInfo.health -= context.gameInfo.wavePenalty
+//            if let healthLabel = scene.childNode(withName: "healthNode") as? SKLabelNode {
+//                healthLabel.text = "HP: \(context.gameInfo.health)"
+//                scaleLabel(for: healthLabel)
+//            }
+//        }
     }
 
     

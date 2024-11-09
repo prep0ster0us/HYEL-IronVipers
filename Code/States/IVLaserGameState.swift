@@ -306,17 +306,6 @@ class IVLaserGameState: GKState {
             }
         }
     }
-    func updateHealth() {
-        guard let context else {
-            return
-        }
-        //        let scoreLabel = scene?.childNode(withName: "scoreNode") as! SKLabelNode
-        //        scoreLabel.text = "Score: \(context.gameInfo.score)"
-        if context.gameInfo.health <= context.gameInfo.testHealth {
-            print("no HP left")
-            context.stateMachine?.enter(IVGameOverState.self)
-        }
-    }
 
     /* METHODS to handle touch events */
     func handleTouch(_ touch: UITouch) {
