@@ -40,52 +40,12 @@ class IVColorWaveState: GKState {
     }
     
     override func willExit(to nextState: GKState) {
-//        guard let scene else { return }
         waveStageCount = 0
-        
-        // remove filter and background
-        let fadeOutAction = SKAction.fadeOut(withDuration: 2.0)
-        let removeAction = SKAction.removeFromParent()
-        let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
-        
-//        background?.run(removeSequence)
-        
+
         // reset wave generation flag
         generateWave = true
     }
     
-//    func setupBackground() {
-//        guard let scene else {
-//            return
-//        }
-//        addBackgroundFilter()
-//        let randomPhase = Phase.allCases.randomElement()
-//        background = SKSpriteNode(color: randomPhase!.color, size: scene.size)
-//        background?.anchorPoint = CGPointZero
-//        background?.position = CGPointZero
-//        background?.zPosition = -2
-//        background?.alpha = 0.4
-//        
-//        scene.addChild(background!)
-//        scene.background = background
-//        
-////        switchBackground()
-//    }
-//    func addBackgroundFilter() {
-//        guard let scene else {
-//            return
-//        }
-//        if let _ = scene.childNode(withName: "filter") {
-//            return
-//        }
-//        let filter = SKSpriteNode(color: .black, size: scene.size)
-//        filter.name = "filter"
-//        filter.position = CGPoint(x: scene.size.width / 2.0,
-//                                  y: scene.size.height / 2.0 )
-//        filter.alpha = 0.4
-//        filter.zPosition = -1
-//        scene.addChild(filter)
-//    }
     func switchBackground() {
         let waitAction = SKAction.wait(forDuration: 3.0)
         let fadeOut = SKAction.fadeOut(withDuration: 0.5)
@@ -194,6 +154,7 @@ class IVColorWaveState: GKState {
             print("no HP left")
             context.stateMachine?.enter(IVGameOverState.self)
         }
+        // TODO: update HP based on wave color - exempt background-colored waves
 //        else {
 //            // update health
 //            context.gameInfo.health -= context.gameInfo.wavePenalty
@@ -285,12 +246,5 @@ class IVColorWaveState: GKState {
     
     func handleTouchEnded(_ touch: UITouch) {
         print("touch ended")
-    }
-}
-
-struct Prev3: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-            .ignoresSafeArea()
     }
 }

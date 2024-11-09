@@ -44,14 +44,14 @@ struct IVGameInfo {
     static let enemyProjectile: UInt32 = 0x1 << 7 // 8
     
     static let particleName = [
-        Phase.RED   : "RedParticle",
-        Phase.GREEN : "GreenParticle",
-        Phase.BLUE  : "BlueParticle"
+        Phase.RED   : "red-node",
+        Phase.GREEN : "green-node",
+        Phase.BLUE  : "blue-node"
     ]
     static let projectileMask = [
-        "RedParticle"  : redProjectile,
-        "BlueParticle" : blueProjectile,
-        "GreenParticle": greenProjectile
+        "red-node"  : redProjectile,
+        "blue-node" : blueProjectile,
+        "green-node": greenProjectile
     ]
     
     let player = SKSpriteNode(imageNamed: "kirby")

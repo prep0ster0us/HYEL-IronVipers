@@ -49,13 +49,6 @@ class IVLaserGameState: GKState {
         guard let scene else {
             return
         }
-        // remove filter and background
-        let fadeOutAction = SKAction.fadeOut(withDuration: 2.0)
-        let removeAction = SKAction.removeFromParent()
-        let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
-        
-//        background?.run(removeSequence)
-        
         for laserNodePair in laserNodes {
             laserNodePair.startNode.removeFromParent()
             laserNodePair.endNode.removeFromParent()
@@ -102,19 +95,7 @@ class IVLaserGameState: GKState {
             scene.run(spawnSequence, withKey: "spawnLaser")
         }
     }
-    
-//    func setupBackground() {
-//        guard let scene else { return }
-//        let randomPhase = Phase.allCases.randomElement()
-//        background = SKSpriteNode(color: randomPhase!.color, size: scene.size)
-//        background?.anchorPoint = CGPointZero
-//        background?.position = CGPointZero
-//        background?.zPosition = -2
-//        background?.alpha = 0.4
-//        
-//        scene.addChild(background!)
-//    }
-    
+
     func spawnLaserNodes() {
         guard let scene else {
             return
@@ -253,7 +234,7 @@ class IVLaserGameState: GKState {
         
     }
     func showSuccessLabel() {
-        guard let scene, let context else { return }
+        guard let scene else { return }
         // Create the SKLabelNode for the pop-up
         let label = SKLabelNode(text: "Danger Averted!")
         label.fontSize = 40
