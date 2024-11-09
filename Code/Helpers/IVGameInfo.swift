@@ -17,6 +17,8 @@ struct IVGameInfo {
     var gameEndScore = 0
     var transitionScore = 2
     var projectilePenalty = 5
+    var laserPenalty = 10
+    var laserReward = 5
     
     let bgColors: [SKColor] = [.blue, .purple, .orange, .red, .green]
     // TODO: expand to include all properties for the game session

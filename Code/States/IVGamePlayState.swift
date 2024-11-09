@@ -16,6 +16,7 @@ class IVGamePlayState: GKState {
     var enemyProjectile : SKSpriteNode?
     
     var background: SKSpriteNode?
+    var localScore = 0         // to transition to other states periodically
     
     /// STEP-2: initialize these values for each state
     init(scene: IVGameScene, context: IVGameContext) {
@@ -55,6 +56,9 @@ class IVGamePlayState: GKState {
         let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
         
         scene.background?.run(removeSequence)
+        
+        // reset local score
+        localScore = 0
     }
     
     func setupBackground() {
@@ -130,7 +134,7 @@ class IVGamePlayState: GKState {
         }
         //        let scoreLabel = scene?.childNode(withName: "scoreNode") as! SKLabelNode
         //        scoreLabel.text = "Score: \(context.gameInfo.score)"
-        if context.gameInfo.score > context.gameInfo.transitionScore {
+        if localScore > context.gameInfo.transitionScore {
             print("go into laser game")
             context.stateMachine?.enter(IVLaserGameState.self)
         }
@@ -172,6 +176,9 @@ class IVGamePlayState: GKState {
     
     func setupHealthBar() {
         guard let scene, let context else {
+            return
+        }
+        if let _ = scene.childNode(withName: "healthNode") {
             return
         }
         // TODO: create health bar; (for now, just HP value as text)
@@ -238,7 +245,7 @@ class IVGamePlayState: GKState {
             
             scene.addChild(exp)
 
-            let moveAction = SKAction.move(to: exitPos, duration: 1.5)
+            let moveAction = SKAction.move(to: exitPos, duration: 2.0)
             let removeAction = SKAction.removeFromParent()
             let shootSequence = SKAction.sequence([moveAction, removeAction])
             

@@ -15,6 +15,9 @@ class IVLaserGameState: GKState {
     var laserNodes: [LaserNode] = []
     var player: SKSpriteNode?
     var background: SKSpriteNode?
+    var stateNodes: [SKSpriteNode] = []
+    
+    var isHitByLaser: Bool = false
     
     /// STEP-2: initialize these values for each state
     init(scene: IVGameScene, context: IVGameContext) {
@@ -63,6 +66,9 @@ class IVLaserGameState: GKState {
             laserNodePair.endNode.removeFromParent()
         }
         scene.removeAction(forKey: "spawnLaser")
+        
+        // update score (reward if averted laser)
+        updateScore()
     }
     
     func showEntryLabel() {
@@ -252,7 +258,7 @@ class IVLaserGameState: GKState {
         
     }
     func showSuccessLabel() {
-        guard let scene else { return }
+        guard let scene, let context else { return }
         // Create the SKLabelNode for the pop-up
         let label = SKLabelNode(text: "Danger Averted!")
         label.fontSize = 40
@@ -277,11 +283,33 @@ class IVLaserGameState: GKState {
         // Run the pop-up sequence on the label
         label.run(popupSequence) {
             // Transition to the next game state after the label disappears
-//            context.stateMachine?.enter(IVGamePlayState.self)
+            context.stateMachine?.enter(IVGamePlayState.self)
+        }
+    }
+    
+    func updateScore() {
+        guard let context else { return }
+        if self.isHitByLaser {
+            context.gameInfo.score += context.gameInfo.laserReward
+            // update score label
+            if let scoreLabel = scene?.childNode(withName: "scoreNode") as? SKLabelNode {
+                scoreLabel.text = "Score: \(context.gameInfo.score)"
+            }
+        }
+    }
+    func updateHealth() {
+        guard let context else {
+            return
+        }
+        //        let scoreLabel = scene?.childNode(withName: "scoreNode") as! SKLabelNode
+        //        scoreLabel.text = "Score: \(context.gameInfo.score)"
+        if context.gameInfo.health <= context.gameInfo.testHealth {
+            print("no HP left")
+            context.stateMachine?.enter(IVGameOverState.self)
         }
     }
 
-    
+    /* METHODS to handle touch events */
     func handleTouch(_ touch: UITouch) {
         guard let scene else {
             return

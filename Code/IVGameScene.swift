@@ -117,9 +117,9 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         guard let context else { return }
         // Get the current state and cycle to the next one
         if context.stateMachine?.currentState is IVGamePlayState {
-            context.stateMachine?.enter(IVGamePlayState.self)
-        } else if context.stateMachine?.currentState is IVLaserGameState {
             context.stateMachine?.enter(IVLaserGameState.self)
+        } else if context.stateMachine?.currentState is IVLaserGameState {
+            context.stateMachine?.enter(IVGamePlayState.self)
         }
 //        else if stateMachine?.currentState is <third state> {
 //            stateMachine?.enter(IVGamePlayState.self) // Loop back to the first state
@@ -188,6 +188,9 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
 //                return
 //            }
             context.gameInfo.score += 1
+            if let currentState = context.stateMachine?.currentState as? IVGamePlayState {
+                currentState.localScore += 1
+            }
             if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
                 scoreLabel.text = "Score: \(context.gameInfo.score)"
                 scaleLabel(for: scoreLabel)
@@ -211,10 +214,10 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             // Handle player hit by laser
             print("hit laser beam")
             
-            context.gameInfo.score -= 10
-            if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
-                scoreLabel.text = "Score: \(context.gameInfo.score)"
-            }
+//            context.gameInfo.score -= 10
+//            if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
+//                scoreLabel.text = "Score: \(context.gameInfo.score)"
+//            }
             // Create a shiver effect using small movement actions
             let moveRight = SKAction.moveBy(x: 5, y: 0, duration: 0.05)
             let moveLeft = SKAction.moveBy(x: -5, y: 0, duration: 0.05)
@@ -223,6 +226,18 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             
             // Run the shiver action on the player node
             player?.run(shiverRepeat)
+            
+            // mark as hit
+            if let currentState = context.stateMachine?.currentState as? IVLaserGameState {
+                currentState.isHitByLaser = true
+            }
+            
+            // update health
+            context.gameInfo.health -= context.gameInfo.laserPenalty
+            if let healthLabel = childNode(withName: "healthNode") as? SKLabelNode {
+                healthLabel.text = "HP: \(context.gameInfo.health)"
+                scaleLabel(for: healthLabel)
+            }
         }
         
         else if (contactA.categoryBitMask == IVGameInfo.player && contactB.categoryBitMask != currentProjectileMask) ||
