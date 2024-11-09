@@ -55,8 +55,6 @@ class IVGamePlayState: GKState {
         let removeAction = SKAction.removeFromParent()
         let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
         
-        scene.background?.run(removeSequence)
-        
         // reset local score
         localScore = 0
     }

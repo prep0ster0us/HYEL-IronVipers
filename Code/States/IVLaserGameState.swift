@@ -14,7 +14,7 @@ class IVLaserGameState: GKState {
     
     var laserNodes: [LaserNode] = []
     var player: SKSpriteNode?
-    var background: SKSpriteNode?
+//    var background: SKSpriteNode?
     var stateNodes: [SKSpriteNode] = []
     
     var isHitByLaser: Bool = false
@@ -41,7 +41,7 @@ class IVLaserGameState: GKState {
         
 //        setupPlayer()
 //        spawnLaserNodes()
-        setupBackground()
+//        setupBackground()
         showEntryLabel()
 
     }
@@ -54,7 +54,7 @@ class IVLaserGameState: GKState {
         let removeAction = SKAction.removeFromParent()
         let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
         
-        background?.run(removeSequence)
+//        background?.run(removeSequence)
         
         for laserNodePair in laserNodes {
             laserNodePair.startNode.removeFromParent()
@@ -103,17 +103,17 @@ class IVLaserGameState: GKState {
         }
     }
     
-    func setupBackground() {
-        guard let scene else { return }
-        let randomPhase = Phase.allCases.randomElement()
-        background = SKSpriteNode(color: randomPhase!.color, size: scene.size)
-        background?.anchorPoint = CGPointZero
-        background?.position = CGPointZero
-        background?.zPosition = -2
-        background?.alpha = 0.4
-        
-        scene.addChild(background!)
-    }
+//    func setupBackground() {
+//        guard let scene else { return }
+//        let randomPhase = Phase.allCases.randomElement()
+//        background = SKSpriteNode(color: randomPhase!.color, size: scene.size)
+//        background?.anchorPoint = CGPointZero
+//        background?.position = CGPointZero
+//        background?.zPosition = -2
+//        background?.alpha = 0.4
+//        
+//        scene.addChild(background!)
+//    }
     
     func spawnLaserNodes() {
         guard let scene else {

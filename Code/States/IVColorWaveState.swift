@@ -33,14 +33,14 @@ class IVColorWaveState: GKState {
     /// a state can have multiple entry points, this helps check which state calls the current state (i.e. the parent state)
     /// ex: game-over state can be a result of time running out OR no more lives left.
     override func didEnter(from previousState: GKState?) {
-        guard let scene, let context else { return }
+        guard let scene else { return }
         print("did enter color wave game state")
         
-        setupBackground()
+        background = scene.background
     }
     
     override func willExit(to nextState: GKState) {
-        guard let scene else { return }
+//        guard let scene else { return }
         waveStageCount = 0
         
         // remove filter and background
@@ -48,53 +48,53 @@ class IVColorWaveState: GKState {
         let removeAction = SKAction.removeFromParent()
         let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
         
-        background?.run(removeSequence)
+//        background?.run(removeSequence)
         
         // reset wave generation flag
         generateWave = true
     }
     
-    func setupBackground() {
-        guard let scene else {
-            return
-        }
-        addBackgroundFilter()
-        let randomPhase = Phase.allCases.randomElement()
-        background = SKSpriteNode(color: randomPhase!.color, size: scene.size)
-        background?.anchorPoint = CGPointZero
-        background?.position = CGPointZero
-        background?.zPosition = -2
-        background?.alpha = 0.4
-        
-        scene.addChild(background!)
-        scene.background = background
-        
-//        switchBackground()
-    }
-    func addBackgroundFilter() {
-        guard let scene else {
-            return
-        }
-        if let _ = scene.childNode(withName: "filter") {
-            return
-        }
-        let filter = SKSpriteNode(color: .black, size: scene.size)
-        filter.name = "filter"
-        filter.position = CGPoint(x: scene.size.width / 2.0,
-                                  y: scene.size.height / 2.0 )
-        filter.alpha = 0.4
-        filter.zPosition = -1
-        scene.addChild(filter)
-    }
+//    func setupBackground() {
+//        guard let scene else {
+//            return
+//        }
+//        addBackgroundFilter()
+//        let randomPhase = Phase.allCases.randomElement()
+//        background = SKSpriteNode(color: randomPhase!.color, size: scene.size)
+//        background?.anchorPoint = CGPointZero
+//        background?.position = CGPointZero
+//        background?.zPosition = -2
+//        background?.alpha = 0.4
+//        
+//        scene.addChild(background!)
+//        scene.background = background
+//        
+////        switchBackground()
+//    }
+//    func addBackgroundFilter() {
+//        guard let scene else {
+//            return
+//        }
+//        if let _ = scene.childNode(withName: "filter") {
+//            return
+//        }
+//        let filter = SKSpriteNode(color: .black, size: scene.size)
+//        filter.name = "filter"
+//        filter.position = CGPoint(x: scene.size.width / 2.0,
+//                                  y: scene.size.height / 2.0 )
+//        filter.alpha = 0.4
+//        filter.zPosition = -1
+//        scene.addChild(filter)
+//    }
     func switchBackground() {
-        let waitAction = SKAction.wait(forDuration: 0.1)
-        let fadeOut = SKAction.fadeOut(withDuration: 1.0)
+        let waitAction = SKAction.wait(forDuration: 3.0)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
         let changePhase = SKAction.run { [self] in
             let currentPhase = Phase.phase(for: background!.color)
             let nextPhase = Phase.random(excluding: currentPhase!)
             background!.color = nextPhase.color
         }
-        let fadeIn = SKAction.fadeIn(withDuration: 0.2)
+        let fadeIn = SKAction.fadeIn(withDuration: 0.5)
         let changeSequence = SKAction.sequence([waitAction, fadeOut, changePhase, fadeIn])
         background!.run(changeSequence)
     }
@@ -234,44 +234,13 @@ class IVColorWaveState: GKState {
         }
     }
 
-    func createWave() {
-        guard let scene else { return }
-        
-        // wave color = different from current background phase
-        let wavePhase = Phase.allCases.filter { $0 != Phase.phase(for: background!.color) }.randomElement()!
-        let waveColor = wavePhase.color
-        
-        // wave position
-        let randomNum = CGFloat.random(in: 0...1)
-        let startX: CGFloat
-        let endX: CGFloat
-        if randomNum < 0.5 {
-            startX = -50
-            endX = scene.size.width+50      // 50 for deviation offscreen
-        } else {
-            startX = scene.size.width+50
-            endX = -50
-        }
-        let waveY = CGFloat.random(in: 100...scene.size.height - 100)  // Random Y-position
-        
-        // create wave node
-        let wave = SKSpriteNode(color: waveColor,
-                                size: CGSize(width: 100, height: 30) )
-        wave.position = CGPoint(x: startX, y: waveY)
-        wave.alpha = 0.6  // Slight transparency for effect
-        wave.name = "colorWave"
-        
-        scene.addChild(wave)
-        
-        let moveAction = SKAction.moveTo(x: endX, duration: 4.0)
-        let removeAction = SKAction.removeFromParent()              // remove
-        wave.run(SKAction.sequence([moveAction, removeAction]))
-    }
-    
     func detectPlayerContact() {
         guard let scene else { return }
         scene.enumerateChildNodes(withName: "colorWave") { node, _ in
             if let wave = node as? SKSpriteNode {
+                if wave.color == scene.background?.color {
+                    return
+                }
                 let waveFrame = wave.frame.insetBy(dx: -10, dy: -10)  // Slightly larger frame for contact detection
                 if waveFrame.contains(scene.player!.position) {
                     self.playerHitByWave()

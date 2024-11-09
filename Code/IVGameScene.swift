@@ -82,25 +82,26 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         // cycle through different obstacle course states
 //        cycleStates(currentTime)
 
+        // Calculate delta time
+        if lastUpdateTime == 0 {
+            lastUpdateTime = currentTime
+        }
+        
+        deltaTime = currentTime - lastUpdateTime
+        lastUpdateTime = currentTime
+        
+        // Update time since last action
+        timeSinceLastAction += deltaTime
+        
+        // Check if it's time to perform the action
+        if timeSinceLastAction >= actionInterval {
+            spawnProjectile()
+            timeSinceLastAction = 0 // Reset the timer
+        }
+
         // shoot projectiles (from player)
         if let currentState = context.stateMachine?.currentState as? IVGamePlayState {
-            
-            // Calculate delta time
-            if lastUpdateTime == 0 {
-                lastUpdateTime = currentTime
-            }
-            
-            deltaTime = currentTime - lastUpdateTime
-            lastUpdateTime = currentTime
-            
-            // Update time since last action
-            timeSinceLastAction += deltaTime
-            
-            // Check if it's time to perform the action
-            if timeSinceLastAction >= actionInterval {
-                currentState.spawnProjectile()
-                timeSinceLastAction = 0 // Reset the timer
-            }
+           
             currentState.updateScore()
             currentState.updateHealth()
         }
@@ -111,25 +112,8 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             currentState.detectPlayerPosition()
         }
         if let currentState = context.stateMachine?.currentState as? IVColorWaveState {
-//            if currentState.generateWave {
-//                currentState.spawnColorWave()
-//            }
-            // Calculate delta time
-            if lastUpdateTime == 0 {
-                lastUpdateTime = currentTime
-            }
-            
-            deltaTime = currentTime - lastUpdateTime
-            lastUpdateTime = currentTime
-            
-            // Update time since last action
-            timeSinceLastAction += deltaTime
-            
-            // Check if it's time to perform the action
-            if timeSinceLastAction >= actionInterval {
-                currentState.spawnColorWave()
-                timeSinceLastAction = 0 // Reset the timer
-            }
+
+            currentState.spawnColorWave()
             currentState.detectPlayerContact()
             
             currentState.updateHealth()
@@ -137,6 +121,48 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         }
     
     }
+    
+    func spawnProjectile() {
+        // create a projectile node
+        let randomParticle = ["RedParticle", "GreenParticle", "BlueParticle"].randomElement()
+        if let exp = SKEmitterNode(fileNamed: randomParticle!) {
+            let startY = CGFloat.random(in: 25...(size.height-25))
+            let endY = CGFloat.random(in: 25...(size.height-25))
+            let start = CGPoint(x: 0,
+                                   y: startY)
+            let end = CGPoint(x: size.width,
+                                  y: endY)
+            let entryPos = [start, end].randomElement()!
+            let exitPos = entryPos == start ? end : start
+            
+            // calculate angle of projectile path
+            let dx = (exitPos.x > entryPos.x)  ? (exitPos.x - entryPos.x) : (entryPos.x - exitPos.x)
+            let dy = (exitPos.y > entryPos.y)  ? (exitPos.y - entryPos.y) : (entryPos.y - exitPos.y)
+            let angle = atan2(dx, dy)       // TODO: need to fix
+            
+            exp.position = entryPos
+            exp.zPosition = 5
+//            exp.zRotation = angle
+            exp.emissionAngle = .pi - angle
+            exp.particleColor = randomParticle == "RedParticle" ? .red : (randomParticle == "GreenParticle" ? .green : .blue)
+            
+            // setup physics body (to check collision with enemy node)
+            exp.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 25, height: 25))
+            exp.physicsBody?.categoryBitMask = IVGameInfo.projectileMask[randomParticle!]!
+            exp.physicsBody?.contactTestBitMask = IVGameInfo.player
+            exp.physicsBody?.collisionBitMask = IVGameInfo.none
+            exp.physicsBody?.affectedByGravity = false
+            
+            addChild(exp)
+
+            let moveAction = SKAction.move(to: exitPos, duration: 2.0)
+            let removeAction = SKAction.removeFromParent()
+            let shootSequence = SKAction.sequence([moveAction, removeAction])
+            
+            exp.run(shootSequence)
+        }
+    }
+    
     func getDistance(_ direction: String, _ distance: CGFloat) -> CGFloat {
         return direction.elementsEqual("left") ? -distance : distance
     }
@@ -195,8 +221,6 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         let contactB = contact.bodyB
         
         guard let currentPhase = Phase.phase(for: background!.color) else {
-            print(background as Any)
-            print(gameState?.background as Any)
             return
         }
         
