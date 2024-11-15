@@ -43,7 +43,6 @@ class IVGamePlayState: GKState {
         setupHealthBar()
         setupPlayer()
         
-        spawnProjectile()
     }
     
     override func willExit(to nextState: GKState) {        
@@ -197,70 +196,6 @@ class IVGamePlayState: GKState {
         if context.gameInfo.health < context.gameInfo.testHealth {
             context.stateMachine?.enter(IVGameOverState.self)
         }
-    }
-    
-    func spawnProjectile() {
-        guard let scene else {
-            return
-        }
-        // create a projectile node
-        let randomNode = ["red-node", "green-node", "blue-node"].randomElement()
-        let exp = SKSpriteNode(imageNamed: randomNode!)
-        exp.setScale(randomNode == "red-node" ? 0.15 : (randomNode == "blue-node" ? 0.12 : 0.18))
-        let startY = CGFloat.random(in: 25...(scene.size.height-25))
-        let endY = CGFloat.random(in: 25...(scene.size.height-25))
-        let start = CGPoint(x: 0,
-                            y: startY)
-        let end = CGPoint(x: scene.size.width,
-                          y: endY)
-        let entryPos = [start, end].randomElement()!
-        let exitPos = entryPos == start ? end : start
-        
-        // calculate angle of projectile path
-//        let dx = (exitPos.x > entryPos.x)  ? (exitPos.x - entryPos.x) : (entryPos.x - exitPos.x)
-//        let dy = (exitPos.y > entryPos.y)  ? (exitPos.y - entryPos.y) : (entryPos.y - exitPos.y)
-//        let angle = atan2(dx, dy)       // TODO: need to fix
-        
-        exp.position = entryPos
-        exp.zPosition = 3
-        //            exp.zRotation = angle
-        //            exp.emissionAngle = .pi - angle
-        
-        // setup physics body (to check collision with enemy node)
-        exp.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 25, height: 25))
-        exp.physicsBody?.categoryBitMask = IVGameInfo.projectileMask[randomNode!]!
-        exp.physicsBody?.contactTestBitMask = IVGameInfo.player
-        exp.physicsBody?.collisionBitMask = IVGameInfo.none
-        exp.physicsBody?.affectedByGravity = false
-        
-        scene.addChild(exp)
-        
-        let moveAction = SKAction.move(to: exitPos, duration: 2.0)
-        let removeAction = SKAction.removeFromParent()
-        let shootSequence = SKAction.sequence([moveAction, removeAction])
-        
-        exp.run(shootSequence)
-        
-    }
-    
-    func randomizeMovement() -> SKAction {
-        // Random offsets for moving the enemy node(s)
-        let randomX = CGFloat.random(in: -100...100)
-        let randomY = CGFloat.random(in: -25...25)
-        
-        let enemy = scene?.childNode(withName: "enemyNode")
-        let dx = randomX + (enemy?.position.x)!
-        let dy = randomY + (enemy?.position.y)!
-        
-        let offsetX = (dx < 5) ? -randomX : ((dx > (scene?.size.width)!-5.0) ? -randomX : randomX)
-        let offsetY = (dy < 5) ? -randomY : ((dy > (scene?.size.height)!/2.0) ? -randomY : randomY)
-        
-//        let offsetX = ((dX + (enemy?.position.x)!) < 5 || (dX + (enemy?.position.x)!) > (scene?.size.width)!) ? 0 : dX
-//        let offsetY = ((dY + (enemy?.position.y)!) < 5 || (dY + (enemy?.position.y)!) > (scene?.size.height)!/2.0) ? 0 : dY
-
-        let moveAction = SKAction.moveBy(x: offsetX, y: offsetY, duration: 2.0)
-        let waitAction = SKAction.wait(forDuration: 0.2)        // slight pause for smoother animation
-        return SKAction.sequence([moveAction, waitAction])
     }
     
     /* METHODS to handle touch events */

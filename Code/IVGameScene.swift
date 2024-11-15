@@ -124,45 +124,44 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func spawnProjectile() {
-        // create a projectile node
-        let randomNode = ["red-node", "green-node", "blue-node"].randomElement()
-        let exp = SKSpriteNode(imageNamed: randomNode!)
-        exp.setScale(randomNode == "red-node" ? 0.15 : (randomNode == "blue-node" ? 0.12 : 0.18))
-        let startY = CGFloat.random(in: 25...(size.height-25))
-        let endY = CGFloat.random(in: 25...(size.height-25))
-        let start = CGPoint(x: 0,
-                            y: startY)
-        let end = CGPoint(x: size.width,
-                          y: endY)
-        let entryPos = [start, end].randomElement()!
-        let exitPos = entryPos == start ? end : start
-        
-        // calculate angle of projectile path
-//        let dx = (exitPos.x > entryPos.x)  ? (exitPos.x - entryPos.x) : (entryPos.x - exitPos.x)
-//        let dy = (exitPos.y > entryPos.y)  ? (exitPos.y - entryPos.y) : (entryPos.y - exitPos.y)
-        //            let angle = atan2(dx, dy)       // TODO: need to fix
-        
-        exp.position = entryPos
-        exp.zPosition = 3
-        //            exp.zRotation = angle
-        //            exp.emissionAngle = .pi - angle
-        //            exp.particleColor = randomParticle == "RedParticle" ? .red : (randomParticle == "GreenParticle" ? .green : .blue)
-        
-        // setup physics body (to check collision with enemy node)
-        exp.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 25, height: 25))
-        exp.physicsBody?.categoryBitMask = IVGameInfo.projectileMask[randomNode!]!
-        exp.physicsBody?.contactTestBitMask = IVGameInfo.player
-        exp.physicsBody?.collisionBitMask = IVGameInfo.none
-        exp.physicsBody?.affectedByGravity = false
-        
-        addChild(exp)
-        
-        let moveAction = SKAction.move(to: exitPos, duration: 2.0)
-        let removeAction = SKAction.removeFromParent()
-        let shootSequence = SKAction.sequence([moveAction, removeAction])
-        
-        exp.run(shootSequence)
-        
+        guard let scene else { return }
+        let randomParticle = ["RedParticle", "GreenParticle", "BlueParticle"].randomElement()
+        if let exp = SKEmitterNode(fileNamed: randomParticle!) {
+            let startY = CGFloat.random(in: 25...(scene.size.height-25))
+            let endY = CGFloat.random(in: 25...(scene.size.height-25))
+            let start = CGPoint(x: 0,
+                                y: startY)
+            let end = CGPoint(x: scene.size.width,
+                              y: endY)
+            let entryPos = [start, end].randomElement()!
+            let exitPos = entryPos == start ? end : start
+            
+            // calculate angle of projectile path
+            let dx = (exitPos.x > entryPos.x)  ? (exitPos.x - entryPos.x) : (entryPos.x - exitPos.x)
+            let dy = (exitPos.y > entryPos.y)  ? (exitPos.y - entryPos.y) : (entryPos.y - exitPos.y)
+            let angle = atan2(dx, dy)       // TODO: need to fix
+            
+            exp.position = entryPos
+            exp.zPosition = 3
+            //            exp.zRotation = angle
+            exp.emissionAngle = .pi - angle
+            exp.particleColor = randomParticle == "RedParticle" ? .red : (randomParticle == "GreenParticle" ? .green : .blue)
+            
+            // setup physics body (to check collision with enemy node)
+            exp.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 25, height: 25))
+            exp.physicsBody?.categoryBitMask = IVGameInfo.projectileMask[randomParticle!]!
+            exp.physicsBody?.contactTestBitMask = IVGameInfo.player
+            exp.physicsBody?.collisionBitMask = IVGameInfo.none
+            exp.physicsBody?.affectedByGravity = false
+            
+            scene.addChild(exp)
+            
+            let moveAction = SKAction.move(to: exitPos, duration: 2.0)
+            let removeAction = SKAction.removeFromParent()
+            let shootSequence = SKAction.sequence([moveAction, removeAction])
+            
+            exp.run(shootSequence)
+        }
     }
     
     func getDistance(_ direction: String, _ distance: CGFloat) -> CGFloat {
