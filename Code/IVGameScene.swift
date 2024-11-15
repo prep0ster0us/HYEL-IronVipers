@@ -18,7 +18,6 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
     
     var gameState: IVGamePlayState?
     var player: SKSpriteNode?                           // store reference for (main) player model
-    var background: SKSpriteNode?
     
     // time variables
     private var lastUpdateTime: TimeInterval = 0
@@ -221,10 +220,7 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         let contactA = contact.bodyA
         let contactB = contact.bodyB
         
-        guard let currentPhase = Phase.phase(for: background!.color) else {
-            return
-        }
-        
+        let currentPhase = context.gameInfo.currentPhase
         let currentParticle = IVGameInfo.particleName[currentPhase]
         let currentProjectileMask = IVGameInfo.projectileMask[currentParticle!]
         

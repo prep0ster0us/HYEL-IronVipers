@@ -12,6 +12,7 @@ class IVGamePlayState: GKState {
     weak var scene: IVGameScene?
     weak var context: IVGameContext?
     
+    var currentColor: SKColor!
     var playerProjectile : SKSpriteNode?
     var enemyProjectile : SKSpriteNode?
     
@@ -51,48 +52,68 @@ class IVGamePlayState: GKState {
     }
     
     func setupBackground() {
-        guard let scene else {
+        guard let scene, let context else {
             return
         }
-        addBackgroundFilter()
         let randomPhase = Phase.allCases.randomElement()
-        background = SKSpriteNode(color: randomPhase!.color, size: scene.size)
+        currentColor = randomPhase!.color
+        background = SKSpriteNode(color: currentColor, size: scene.size)
         background?.anchorPoint = CGPointZero
         background?.position = CGPointZero
         background?.zPosition = -2
         background?.alpha = 0.4
+        background?.name = "background"
         
         scene.addChild(background!)
-        scene.background = background
+        // track background phase and color
+        context.gameInfo.currentPhase = randomPhase!
+        context.gameInfo.bgColor = currentColor
         
         switchBackground()
     }
-    func addBackgroundFilter() {
-        guard let scene else {
-            return
-        }
-        if let _ = scene.childNode(withName: "filter") {
-            return
-        }
-        let filter = SKSpriteNode(color: .black, size: scene.size)
-        filter.name = "filter"
-        filter.position = CGPoint(x: scene.size.width / 2.0,
-                                  y: scene.size.height / 2.0 )
-        filter.alpha = 0.4
-        filter.zPosition = -1
-        scene.addChild(filter)
-    }
     func switchBackground() {
-        let waitAction = SKAction.wait(forDuration: 3.0)
-        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
-        let changePhase = SKAction.run { [self] in
-            let currentPhase = Phase.phase(for: background!.color)
-            let nextPhase = Phase.random(excluding: currentPhase!)
-            background!.color = nextPhase.color
+        guard let scene else { return }
+        let waitAction = SKAction.wait(forDuration: 5.0)
+        let changePhase = SKAction.run { [weak self] in
+            self?.cycleToNextColor()
         }
-        let fadeIn = SKAction.fadeIn(withDuration: 0.5)
-        let changeSequence = SKAction.sequence([waitAction, fadeOut, changePhase, fadeIn])
-        background!.run(SKAction.repeatForever(changeSequence))
+        let changeSequence = SKAction.sequence([waitAction, changePhase])
+        scene.run(SKAction.repeatForever(changeSequence))
+    }
+    func cycleToNextColor() {
+        guard let scene, let context else { return }
+        
+        let currentPhase = Phase.phase(for: background!.color)
+        let nextPhase = Phase.random(excluding: currentPhase!)
+        let nextColor = nextPhase.color
+        print(nextPhase)
+        
+        let newBackground = SKSpriteNode(color: nextColor, size: scene.size)
+        // Start off-screen (to the left)
+        newBackground.position = CGPoint(x: -scene.size.width / 2, y: scene.size.height / 2)
+        newBackground.zPosition = -2
+        newBackground.alpha = 0.4
+        
+        scene.addChild(newBackground)
+        
+        // Slide-in action for the new background
+        let slideIn = SKAction.moveTo(x: scene.size.width / 2, duration: 1.0)
+        // Slide-out action for the old background
+        let slideOut = SKAction.moveTo(x: scene.size.width * 1.5, duration: 1.0)
+        // actions for removing
+        let removeOldBackground = SKAction.removeFromParent()
+        let oldBackgroundSequence = SKAction.sequence([slideOut, removeOldBackground])
+        
+        // Remove (slide-out) OLD background + Add (slide-in) NEW background
+        background!.run(oldBackgroundSequence)
+        newBackground.run(slideIn) { [weak self] in
+            // Update currentColor and background reference
+            self?.currentColor = nextColor
+            self?.background = newBackground
+            // track changes for background phase and color
+            context.gameInfo.currentPhase = nextPhase
+            context.gameInfo.bgColor = nextColor
+        }
     }
     
     func setupScoreLabel() {
@@ -149,9 +170,7 @@ class IVGamePlayState: GKState {
         player.setScale(0.4)
         player.zPosition = 3          // place behind other nodes (down the z-axis)
         
-        guard let currentPhase = Phase.phase(for: background!.color) else {
-            return
-        }
+        let currentPhase = context.gameInfo.currentPhase
         // setup physics body (to check contact with enemy projectiles)
         player.physicsBody = SKPhysicsBody(rectangleOf: player.size)
         player.physicsBody?.categoryBitMask = IVGameInfo.player

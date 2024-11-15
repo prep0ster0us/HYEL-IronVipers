@@ -36,7 +36,7 @@ class IVColorWaveState: GKState {
         guard let scene else { return }
         print("did enter color wave game state")
         
-        background = scene.background
+        background = scene.childNode(withName: "background") as? SKSpriteNode
     }
     
     override func willExit(to nextState: GKState) {
@@ -179,10 +179,10 @@ class IVColorWaveState: GKState {
     }
 
     func detectPlayerContact() {
-        guard let scene else { return }
+        guard let scene, let context else { return }
         scene.enumerateChildNodes(withName: "colorWave") { node, _ in
             if let wave = node as? SKSpriteNode {
-                if wave.color == scene.background?.color {
+                if wave.color == context.gameInfo.bgColor {
                     return
                 }
                 let waveFrame = wave.frame.insetBy(dx: -10, dy: -10)  // Slightly larger frame for contact detection
