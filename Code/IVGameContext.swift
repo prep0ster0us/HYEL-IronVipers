@@ -34,6 +34,7 @@ class IVGameContext: GameContext {
         print("did configure states")
         stateMachine = GKStateMachine(states: [     // contains all possible states in the game
             IVMainMenuState(scene: gameScene, context: self),
+            IVDemoState(scene: gameScene, context: self),
             IVGameIdleState(scene: gameScene, context: self),
             IVGamePlayState(scene: gameScene, context: self),
             IVGameOverState(scene: gameScene, context: self),

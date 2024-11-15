@@ -35,12 +35,26 @@ class IVMainMenuState: GKState {
     override func didEnter(from previousState: GKState?) {
         print("did enter main menu state")
         
+        setupLogo()
         setupTitleLabel()
         setupBackground()
         setupDummyPlayers()
         setupProjectiles()
         
         // TODO: work in progress
+    }
+    func setupLogo() {
+        guard let scene else {
+            return
+        }
+        let title = SKSpriteNode(imageNamed: "title")
+        title.position = CGPoint(x: scene.size.width/2.0,
+                                 y: scene.size.height/1.2 )
+        title.setScale(0.65)
+        title.zPosition = 3
+        title.name="logo"
+        
+        scene.addChild(title)
     }
     
     func setupTitleLabel() {
@@ -49,13 +63,17 @@ class IVMainMenuState: GKState {
         }
         let title = SKLabelNode(text: "Tap to begin")
         title.position = CGPoint(x: scene.size.width/2.0,
-                                 y: scene.size.height/1.3 )
+                                 y: scene.size.height/2.3 )
         title.fontName = "AvenirNext-Bold"
         title.zPosition = 1
         title.fontColor = .white
         title.name="title"
         
         scene.addChild(title)
+        
+        let fadeIn = SKAction.fadeIn(withDuration: 1.8)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.4)
+        title.run(SKAction.repeatForever(SKAction.sequence([fadeOut, fadeIn])))
     }
     
     func setupBackground() {
@@ -93,7 +111,7 @@ class IVMainMenuState: GKState {
         guard let scene else {
             return
         }
-        for _ in 0..<12 {
+        for _ in 0..<5 {
             let dummy = SKSpriteNode(imageNamed: "kirby")
 
             dummy.position = CGPoint(x: CGFloat.random(in: 5...scene.size.width-5.0),
@@ -120,7 +138,7 @@ class IVMainMenuState: GKState {
         let dy = randomY + (node.position.y)
         
         let offsetX = (dx < 100) ? -randomX : ((dx > (scene.size.width)-100.0) ? -randomX : randomX)
-        let offsetY = (dy < 100) ? -randomY : ((dy > (scene.size.height)-100.0) ? -randomY : randomY)
+        let offsetY = (dy < scene.size.height/2) ? -randomY : ((dy > (scene.size.height)-300.0) ? -randomY : randomY)
         
         let moveAction = SKAction.moveBy(x: offsetX,
                                          y: offsetY,
@@ -192,8 +210,9 @@ class IVMainMenuState: GKState {
         }
         scene?.childNode(withName: "filter")?.removeFromParent()
         scene?.childNode(withName: "title")?.removeFromParent()
+        scene?.childNode(withName: "logo")?.removeFromParent()
 
-        context?.stateMachine?.enter(IVGamePlayState.self)
+        context?.stateMachine?.enter(IVDemoState.self)
     }
     
 }

@@ -27,6 +27,8 @@
 		C3D35F512CCDD04000BC50A2 /* Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D35F4D2CCDD04000BC50A2 /* Dependencies.swift */; };
 		C3D35F522CCDD04000BC50A2 /* GameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D35F4E2CCDD04000BC50A2 /* GameContext.swift */; };
 		C3D35F532CCDD04000BC50A2 /* GameType.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D35F4F2CCDD04000BC50A2 /* GameType.swift */; };
+		C3E0FEFB2CE7CAF500107EBD /* IVDemoState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E0FEFA2CE7CAF500107EBD /* IVDemoState.swift */; };
+		C3E0FEFF2CE7D52000107EBD /* IVLabelNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E0FEFE2CE7D52000107EBD /* IVLabelNode.swift */; };
 		C3F5FD672CDD8FB00017B838 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3F5FD652CDD8FB00017B838 /* Assets.xcassets */; };
 		C3F5FD682CDD8FB00017B838 /* RedParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = C3F5FD662CDD8FB00017B838 /* RedParticle.sks */; };
 		C3F5FD6A2CDD90070017B838 /* GreenParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = C3F5FD692CDD90070017B838 /* GreenParticle.sks */; };
@@ -56,6 +58,8 @@
 		C3D35F4D2CCDD04000BC50A2 /* Dependencies.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dependencies.swift; sourceTree = "<group>"; };
 		C3D35F4E2CCDD04000BC50A2 /* GameContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameContext.swift; sourceTree = "<group>"; };
 		C3D35F4F2CCDD04000BC50A2 /* GameType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameType.swift; sourceTree = "<group>"; };
+		C3E0FEFA2CE7CAF500107EBD /* IVDemoState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVDemoState.swift; sourceTree = "<group>"; };
+		C3E0FEFE2CE7D52000107EBD /* IVLabelNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVLabelNode.swift; sourceTree = "<group>"; };
 		C3F5FD652CDD8FB00017B838 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C3F5FD662CDD8FB00017B838 /* RedParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = RedParticle.sks; sourceTree = "<group>"; };
 		C3F5FD692CDD90070017B838 /* GreenParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GreenParticle.sks; sourceTree = "<group>"; };
@@ -84,6 +88,7 @@
 				C3F5FD6D2CDDBA940017B838 /* IVLaserGameState.swift */,
 				C36FBF392CDEEB1B00F3678B /* IVFollowPathState.swift */,
 				C36FBF3B2CDEF1D500F3678B /* IVColorWaveState.swift */,
+				C3E0FEFA2CE7CAF500107EBD /* IVDemoState.swift */,
 			);
 			path = States;
 			sourceTree = "<group>";
@@ -104,6 +109,7 @@
 		C3363C312CD50D440006725D /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				C3E0FEFE2CE7D52000107EBD /* IVLabelNode.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -269,6 +275,7 @@
 				C3D35F522CCDD04000BC50A2 /* GameContext.swift in Sources */,
 				C3D35F502CCDD04000BC50A2 /* GameModeType.swift in Sources */,
 				C3C561A12CD9276F000D9F77 /* IVGameOverState.swift in Sources */,
+				C3E0FEFB2CE7CAF500107EBD /* IVDemoState.swift in Sources */,
 				C3363C362CD50DB20006725D /* IVGameScene.swift in Sources */,
 				C3D35F412CCDCB4900BC50A2 /* ContentView.swift in Sources */,
 				C36FBF3A2CDEEB1B00F3678B /* IVFollowPathState.swift in Sources */,
@@ -279,6 +286,7 @@
 				C3D35F3F2CCDCB4900BC50A2 /* IronVipersApp.swift in Sources */,
 				C3D35F532CCDD04000BC50A2 /* GameType.swift in Sources */,
 				C3C5619F2CD926A2000D9F77 /* IVGamePlayState.swift in Sources */,
+				C3E0FEFF2CE7D52000107EBD /* IVLabelNode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

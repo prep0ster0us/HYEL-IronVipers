@@ -86,6 +86,8 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             currentState.randomizeDummyPlayerMovement()
         } else if let _ = context.stateMachine?.currentState as? IVGameOverState {
             
+        } else if let _ = context.stateMachine?.currentState as? IVDemoState {
+            
         } else {
             
             // Calculate delta time
@@ -120,16 +122,6 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         }
     
     }
-//    func updateHealth() {
-//        guard let context else { return }
-//        if let healthLabel = childNode(withName: "healthNode") as? SKLabelNode {
-//            healthLabel.text = "HP: \(context.gameInfo.health)"
-//            
-//            if context.gameInfo.health < context.gameInfo.testHealth {
-//                context.stateMachine?.enter(IVGameOverState.self)
-//            }
-//        }
-//    }
     
     func spawnProjectile() {
         // create a projectile node
@@ -223,7 +215,7 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
     
     func didBegin(_ contact: SKPhysicsContact) {
         print("in contact")
-        guard let scene, let context else {
+        guard let context else {
             return
         }
         
@@ -386,6 +378,9 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             gamePlayState.handleTouchMoved(touch)
         }
         if let gamePlayState = context?.stateMachine?.currentState as? IVColorWaveState  {
+            gamePlayState.handleTouchMoved(touch)
+        }
+        if let gamePlayState = context?.stateMachine?.currentState as? IVDemoState  {
             gamePlayState.handleTouchMoved(touch)
         }
     }
