@@ -18,6 +18,8 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
     
     var gameState: IVGamePlayState?
     var player: SKSpriteNode?                           // store reference for (main) player model
+    var background: SKSpriteNode?
+    var currentColor: SKColor!
     
     // time variables
     private var lastUpdateTime: TimeInterval = 0
@@ -52,6 +54,7 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         }
 
         prepareGameContext()                        // helper method to setup based on context (BEFORE anything on screen)
+        BackgroundManager.shared.setup(self, context)
         
         physicsWorld.contactDelegate = self         // initialize delegate for node physics
 //        gameState = IVGamePlayState(scene: self, context: context)
@@ -84,6 +87,7 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         if let currentState = context.stateMachine?.currentState as? IVMainMenuState {
             currentState.randomizeDummyPlayerMovement()
         } else if let _ = context.stateMachine?.currentState as? IVGameOverState {
+            return
             
         } else if let _ = context.stateMachine?.currentState as? IVDemoState {
             
@@ -162,9 +166,80 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             exp.run(shootSequence)
         }
     }
-    
     func getDistance(_ direction: String, _ distance: CGFloat) -> CGFloat {
         return direction.elementsEqual("left") ? -distance : distance
+    }
+    
+    func enableAutomaticBackgroundSwitching() {
+        BackgroundManager.shared.toggleMode(toAutomatic: true)
+    }
+    
+    func enableManualBackgroundSwitching() {
+        BackgroundManager.shared.toggleMode(toAutomatic: false)
+    }
+    func prepareBackground() {
+        guard let context else {
+            return
+        }
+        let randomPhase = context.gameInfo.currentPhase
+        currentColor = context.gameInfo.bgColor
+        background = SKSpriteNode(color: currentColor, size: size)
+        background?.anchorPoint = CGPointZero
+        background?.position = CGPointZero
+        background?.zPosition = -2
+        background?.alpha = 0.4
+        background?.name = "background"
+        
+        addChild(background!)
+        // track background phase and color
+        context.gameInfo.currentPhase = randomPhase
+        context.gameInfo.bgColor = currentColor
+        
+        switchBackground()
+    }
+    func switchBackground() {
+        guard let context else { return }
+        let waitAction = SKAction.wait(forDuration: context.gameInfo.bgChangeDuration)
+        let changePhase = SKAction.run { [weak self] in
+            self?.cycleToNextColor()
+        }
+        let changeSequence = SKAction.sequence([waitAction, changePhase])
+        run(SKAction.repeatForever(changeSequence))
+    }
+    func cycleToNextColor() {
+        guard let context else { return }
+        
+        let currentPhase = Phase.phase(for: background!.color)
+        let nextPhase = Phase.random(excluding: currentPhase!)
+        let nextColor = nextPhase.color
+        print(nextPhase)
+        
+        let newBackground = SKSpriteNode(color: nextColor, size: size)
+        // Start off-screen (to the left)
+        newBackground.position = CGPoint(x: -size.width / 2, y: size.height / 2)
+        newBackground.zPosition = -2
+        newBackground.alpha = 0.4
+        
+        addChild(newBackground)
+        
+        // Slide-in action for the new background
+        let slideIn = SKAction.moveTo(x: size.width / 2, duration: 1.0)
+        // Slide-out action for the old background
+        let slideOut = SKAction.moveTo(x: size.width * 1.5, duration: 1.0)
+        // actions for removing
+        let removeOldBackground = SKAction.removeFromParent()
+        let oldBackgroundSequence = SKAction.sequence([slideOut, removeOldBackground])
+        
+        // Remove (slide-out) OLD background + Add (slide-in) NEW background
+        background!.run(oldBackgroundSequence)
+        newBackground.run(slideIn) { [weak self] in
+            // Update currentColor and background reference
+            self?.currentColor = nextColor
+            self?.background = newBackground
+            // track changes for background phase and color
+            context.gameInfo.currentPhase = nextPhase
+            context.gameInfo.bgColor = nextColor
+        }
     }
     
     func cycleToNextState() {

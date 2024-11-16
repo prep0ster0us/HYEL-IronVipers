@@ -39,7 +39,6 @@ class IVGamePlayState: GKState {
     override func didEnter(from previousState: GKState?) {
         print("did enter main game state")
         
-        setupBackground()
         setupScoreLabel()
         setupHealthBar()
         setupPlayer()
@@ -49,71 +48,6 @@ class IVGamePlayState: GKState {
     override func willExit(to nextState: GKState) {        
         // reset local score
         localScore = 0
-    }
-    
-    func setupBackground() {
-        guard let scene, let context else {
-            return
-        }
-        let randomPhase = context.gameInfo.currentPhase
-        currentColor = context.gameInfo.bgColor
-        background = SKSpriteNode(color: currentColor, size: scene.size)
-        background?.anchorPoint = CGPointZero
-        background?.position = CGPointZero
-        background?.zPosition = -2
-        background?.alpha = 0.4
-        background?.name = "background"
-        
-        scene.addChild(background!)
-        // track background phase and color
-        context.gameInfo.currentPhase = randomPhase
-        context.gameInfo.bgColor = currentColor
-        
-        switchBackground()
-    }
-    func switchBackground() {
-        guard let scene, let context else { return }
-        let waitAction = SKAction.wait(forDuration: context.gameInfo.bgChangeDuration)
-        let changePhase = SKAction.run { [weak self] in
-            self?.cycleToNextColor()
-        }
-        let changeSequence = SKAction.sequence([waitAction, changePhase])
-        scene.run(SKAction.repeatForever(changeSequence))
-    }
-    func cycleToNextColor() {
-        guard let scene, let context else { return }
-        
-        let currentPhase = Phase.phase(for: background!.color)
-        let nextPhase = Phase.random(excluding: currentPhase!)
-        let nextColor = nextPhase.color
-        print(nextPhase)
-        
-        let newBackground = SKSpriteNode(color: nextColor, size: scene.size)
-        // Start off-screen (to the left)
-        newBackground.position = CGPoint(x: -scene.size.width / 2, y: scene.size.height / 2)
-        newBackground.zPosition = -2
-        newBackground.alpha = 0.4
-        
-        scene.addChild(newBackground)
-        
-        // Slide-in action for the new background
-        let slideIn = SKAction.moveTo(x: scene.size.width / 2, duration: 1.0)
-        // Slide-out action for the old background
-        let slideOut = SKAction.moveTo(x: scene.size.width * 1.5, duration: 1.0)
-        // actions for removing
-        let removeOldBackground = SKAction.removeFromParent()
-        let oldBackgroundSequence = SKAction.sequence([slideOut, removeOldBackground])
-        
-        // Remove (slide-out) OLD background + Add (slide-in) NEW background
-        background!.run(oldBackgroundSequence)
-        newBackground.run(slideIn) { [weak self] in
-            // Update currentColor and background reference
-            self?.currentColor = nextColor
-            self?.background = newBackground
-            // track changes for background phase and color
-            context.gameInfo.currentPhase = nextPhase
-            context.gameInfo.bgColor = nextColor
-        }
     }
     
     func setupScoreLabel() {
