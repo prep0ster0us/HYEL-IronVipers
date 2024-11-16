@@ -9,8 +9,6 @@ class IVColorWaveState: GKState {
     weak var scene: IVGameScene?
     weak var context: IVGameContext?
     
-    var background: SKSpriteNode?
-    
     var waveStageCount = 0  // track number of "stages" of waves
     var waveActive: Bool = false
     var generateWave: Bool = false
@@ -35,8 +33,6 @@ class IVColorWaveState: GKState {
     override func didEnter(from previousState: GKState?) {
         guard let scene else { return }
         print("did enter color wave game state")
-        
-        background = scene.childNode(withName: "background") as? SKSpriteNode
     }
     
     override func willExit(to nextState: GKState) {
@@ -44,19 +40,6 @@ class IVColorWaveState: GKState {
 
         // reset wave generation flag
         generateWave = true
-    }
-    
-    func switchBackground() {
-        let waitAction = SKAction.wait(forDuration: 3.0)
-        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
-        let changePhase = SKAction.run { [self] in
-            let currentPhase = Phase.phase(for: background!.color)
-            let nextPhase = Phase.random(excluding: currentPhase!)
-            background!.color = nextPhase.color
-        }
-        let fadeIn = SKAction.fadeIn(withDuration: 0.5)
-        let changeSequence = SKAction.sequence([waitAction, fadeOut, changePhase, fadeIn])
-        background!.run(changeSequence)
     }
     
     func spawnColorWave() {
@@ -113,10 +96,7 @@ class IVColorWaveState: GKState {
                 checkIfEndStage()
             }
             if i == waveCount-1 {
-                let changeAction = SKAction.run {
-                    self.switchBackground()
-                }
-                wave.run(SKAction.sequence([moveAction, removeAction, checkAction, changeAction, SKAction.wait(forDuration: 1.0)]))
+                wave.run(SKAction.sequence([moveAction, removeAction, checkAction, SKAction.wait(forDuration: 1.0)]))
             } else {
                 wave.run(SKAction.sequence([moveAction, removeAction, checkAction, SKAction.wait(forDuration: 1.0)]))
             }

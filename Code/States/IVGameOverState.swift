@@ -33,14 +33,23 @@ class IVGameOverState: GKState {
     override func didEnter(from previousState: GKState?) {
         print("did enter game over state")
         
-        addBackgroundFilter()
-        removeGamePlayNodes()
-        displayScore()
+        scene?.removeAllActions()
+        removeNodes() {
+            self.setupGameOver()
+        }
+        
     }
-    func addBackgroundFilter() {
+    
+    override func willExit(to nextState: GKState) {
+//        guard let scene else { return }
+//        scene.removeAllChildren()
+    }
+    
+    func setupGameOver() {
         guard let scene else {
             return
         }
+        // add background filter (for dark game over screen)
         let filter = SKSpriteNode(color: .black, size: scene.size)
         filter.name = "gameOverFilter"
         filter.position = CGPoint(x: scene.size.width / 2.0,
@@ -48,27 +57,14 @@ class IVGameOverState: GKState {
         filter.alpha = 0.5
         filter.zPosition = -1
         scene.addChild(filter)
-    }
-    func removeGamePlayNodes() {
-        guard let scene else {
-            return
-        }
-        let fadeOutAction = SKAction.fadeOut(withDuration: 1.0)
-        let removeAction = SKAction.removeFromParent()
-        let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
-
-        scene.childNode(withName: "enemyNode")?.run(removeSequence)
-        scene.childNode(withName: "playerProjectile")?.run(removeSequence)
-        scene.childNode(withName: "enemyProjectile")?.run(removeSequence)
-        scene.childNode(withName: "healthNode")?.run(removeSequence)
-//        scene.childNode(withName: "scoreNode")?.run(removeSequence)
         
-        
+        // move player node
         let center = CGPoint(x: scene.size.width / 2.0,
                              y: scene.size.height / 6.0)  // **testing
         let moveAction = SKAction.move(to: center, duration: 2.0)
         scene.childNode(withName: "playerNode")?.run(moveAction)
         
+        // add play again label
         let playAgainLabel = SKLabelNode(text: "Tap anywhere to play Again")
         playAgainLabel.name = "playAgainLabel"
         playAgainLabel.position = CGPoint(x: scene.size.width/2.0,
@@ -77,52 +73,81 @@ class IVGameOverState: GKState {
         playAgainLabel.fontSize = 32
         
         scene.addChild(playAgainLabel)
-    }
+        
+        // show final score
+        if let scoreNode = scene.childNode(withName: "scoreNode") {
+            let scorePos = CGPoint(x: scene.size.width/2.0,
+                                 y: scene.size.height/3.0 )
+            let scoreScaleAction = SKAction.scale(to: 1.5, duration: 1.5)
+            let scoreMoveAction = SKAction.move(to: scorePos , duration: 2.0)
+            
+            scoreNode.run(SKAction.group([scoreScaleAction, scoreMoveAction]))
+        }
     
-    func displayScore() {
+    }
+    func removeNodes(completion: @escaping () -> Void) {
         guard let scene else {
             return
         }
-        let center = CGPoint(x: scene.size.width/2.0,
-                             y: scene.size.height/3.0 )
-        let scaleAction = SKAction.scale(to: 1.5, duration: 1.5)
-        let moveAction = SKAction.move(to: center , duration: 2.0)
-        var groupActions = Array<SKAction>()
-        groupActions.append(scaleAction)
-        groupActions.append(moveAction)
+        let fadeOutAction = SKAction.fadeOut(withDuration: 1.0)
+        let removeAction = SKAction.removeFromParent()
+        let removeGroup = SKAction.group([fadeOutAction, removeAction])
         
-        scene.childNode(withName: "scoreNode")!.run(SKAction.group(groupActions))
-//        scene.childNode(withName: "healthNode")!.run(SKAction.group(groupActions))
+        // remove unnecessary nodes
+        let nodesToRemove = scene.children.filter {
+            $0.name != "background" && $0.name != "playerNode" && $0.name != "scoreNode"
+        }
+        for node in nodesToRemove {
+            node.run(removeGroup)
+        }
+        // add slight delay for removal
+        scene.run(SKAction.wait(forDuration: 1.0), completion: completion)
+        
     }
     
+    
     func handleTouch(_ touch: UITouch) {
-        guard let scene, let context else {
+        guard let context else {
             return
         }
         print("Touch on game over state")
         
-        // remove nodes
+        // reset game info variables
+//        resetGameInfo()
+        
+        // reset interface
+        resetInterface {
+            context.stateMachine?.enter(IVGamePlayState.self)
+        }
+//        
+//        // remove nodes
+//        let fadeOutAction = SKAction.fadeOut(withDuration: 1.0)
+//        let removeAction = SKAction.removeFromParent()
+//        let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
+//        scene.childNode(withName: "playAgainLabel")?.run(removeSequence)
+//        scene.childNode(withName: "scoreLabel")?.run(removeSequence)
+//        scene.childNode(withName: "gameOverFilter")?.run(removeSequence)
+//        
+//        resetGameInfo()
+//        
+//        let delay = SKAction.wait(forDuration: 1.5)
+//        scene.run(delay) {
+//            context.stateMachine?.enter(IVGamePlayState.self)
+//        }
+        
+    }
+    func resetInterface(completion: @escaping () -> Void) {
+        guard let scene, let context else {
+            completion()
+            return
+        }
+        
+        // remove try again label
         let fadeOutAction = SKAction.fadeOut(withDuration: 1.0)
         let removeAction = SKAction.removeFromParent()
         let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
         scene.childNode(withName: "playAgainLabel")?.run(removeSequence)
-        scene.childNode(withName: "scoreLabel")?.run(removeSequence)
-        scene.childNode(withName: "gameOverFilter")?.run(removeSequence)
-        
-        resetGameInfo()
-        
-        let delay = SKAction.wait(forDuration: 1.5)
-        scene.run(delay) {
-            context.stateMachine?.enter(IVGamePlayState.self)
-        }
-        
-    }
-    
-    func resetGameInfo() {
-        guard let scene, let context else {
-            return
-        }
-        
+
         // reset previous score (and health)
         context.gameInfo.score = 0
         context.gameInfo.health = 100
@@ -133,12 +158,8 @@ class IVGameOverState: GKState {
         let scaleAction = SKAction.scale(to: 1.0, duration: 0.2)
         let moveAction = SKAction.move(to: originalPosition , duration: 0.5)
         let fadeIn = SKAction.fadeIn(withDuration: 1.0)
-        var groupActions = Array<SKAction>()
-        groupActions.append(scaleAction)
-        groupActions.append(moveAction)
-        groupActions.append(fadeIn)
+        let groupActions = [scaleAction, moveAction, fadeIn]
 
-        
         if let scoreLabel = scene.childNode(withName: "scoreNode") as? SKLabelNode {
             let fadeOut = SKAction.fadeOut(withDuration: 1.0)
             let update = SKAction.run {
@@ -146,8 +167,11 @@ class IVGameOverState: GKState {
             }
             
             let moveBack = SKAction.group(groupActions)
-            scoreLabel.run(SKAction.sequence([fadeOut, update, moveBack]))
+            scoreLabel.run(SKAction.sequence([fadeOut, update, moveBack])) {
+                completion()
+            }
         }
+        
     }
     
 }

@@ -55,8 +55,8 @@ class IVGamePlayState: GKState {
         guard let scene, let context else {
             return
         }
-        let randomPhase = Phase.allCases.randomElement()
-        currentColor = randomPhase!.color
+        let randomPhase = context.gameInfo.currentPhase
+        currentColor = context.gameInfo.bgColor
         background = SKSpriteNode(color: currentColor, size: scene.size)
         background?.anchorPoint = CGPointZero
         background?.position = CGPointZero
@@ -66,14 +66,14 @@ class IVGamePlayState: GKState {
         
         scene.addChild(background!)
         // track background phase and color
-        context.gameInfo.currentPhase = randomPhase!
+        context.gameInfo.currentPhase = randomPhase
         context.gameInfo.bgColor = currentColor
         
         switchBackground()
     }
     func switchBackground() {
-        guard let scene else { return }
-        let waitAction = SKAction.wait(forDuration: 5.0)
+        guard let scene, let context else { return }
+        let waitAction = SKAction.wait(forDuration: context.gameInfo.bgChangeDuration)
         let changePhase = SKAction.run { [weak self] in
             self?.cycleToNextColor()
         }

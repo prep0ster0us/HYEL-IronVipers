@@ -57,6 +57,7 @@ struct IVGameInfo {
     let player = SKSpriteNode(imageNamed: "kirby")
     var currentPhase: Phase = Phase.RED         // random starting value
     var bgColor: SKColor = Phase.RED.color      // random starting value
+    var bgChangeDuration = 5.0
     
 }
 
