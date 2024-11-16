@@ -104,7 +104,7 @@ class IVDemoState: GKState {
         let fadeIn = SKAction.fadeIn(withDuration: 0.2)
         let scaleUp = SKAction.scale(to: 1.2, duration: 0.2)
         let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
-        let wait = SKAction.wait(forDuration: 3.0)
+        let wait = SKAction.wait(forDuration: 1.0)      // TODO: change back to 3.0 (shortened for testing)
 //        let fadeOut = SKAction.fadeOut(withDuration: 0.2)
 //        let removeLabel = SKAction.removeFromParent()
 

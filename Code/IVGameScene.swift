@@ -54,7 +54,6 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         }
 
         prepareGameContext()                        // helper method to setup based on context (BEFORE anything on screen)
-        BackgroundManager.shared.setup(self, context)
         
         physicsWorld.contactDelegate = self         // initialize delegate for node physics
 //        gameState = IVGamePlayState(scene: self, context: context)

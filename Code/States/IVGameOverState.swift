@@ -41,8 +41,19 @@ class IVGameOverState: GKState {
     }
     
     override func willExit(to nextState: GKState) {
-//        guard let scene else { return }
-//        scene.removeAllChildren()
+        guard let scene else { return }
+        
+        let nodesToRemove = scene.children.filter { $0.name == "background" }
+        for node in nodesToRemove {
+            node.removeFromParent()
+        }
+        // remove game over filter
+        if let filter = scene.childNode(withName: "gameOverFilter") {
+            let fadeOutAction = SKAction.fadeOut(withDuration: 1.0)
+            let removeAction = SKAction.removeFromParent()
+            let removeGroup = SKAction.group([fadeOutAction, removeAction])
+            filter.run(removeGroup)
+        }
     }
     
     func setupGameOver() {
@@ -101,7 +112,7 @@ class IVGameOverState: GKState {
             node.run(removeGroup)
         }
         // add slight delay for removal
-        scene.run(SKAction.wait(forDuration: 1.0), completion: completion)
+        scene.run(SKAction.wait(forDuration: 0.1), completion: completion)
         
     }
     
@@ -112,28 +123,10 @@ class IVGameOverState: GKState {
         }
         print("Touch on game over state")
         
-        // reset game info variables
-//        resetGameInfo()
-        
         // reset interface
         resetInterface {
             context.stateMachine?.enter(IVGamePlayState.self)
         }
-//        
-//        // remove nodes
-//        let fadeOutAction = SKAction.fadeOut(withDuration: 1.0)
-//        let removeAction = SKAction.removeFromParent()
-//        let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
-//        scene.childNode(withName: "playAgainLabel")?.run(removeSequence)
-//        scene.childNode(withName: "scoreLabel")?.run(removeSequence)
-//        scene.childNode(withName: "gameOverFilter")?.run(removeSequence)
-//        
-//        resetGameInfo()
-//        
-//        let delay = SKAction.wait(forDuration: 1.5)
-//        scene.run(delay) {
-//            context.stateMachine?.enter(IVGamePlayState.self)
-//        }
         
     }
     func resetInterface(completion: @escaping () -> Void) {

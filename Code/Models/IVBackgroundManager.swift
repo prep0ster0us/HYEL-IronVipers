@@ -22,6 +22,9 @@ class BackgroundManager {
         let background = SKSpriteNode(color: currentColor, size: scene.size)
         background.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
         background.name = "background"
+        background.zPosition = -2
+        background.alpha = 0.4
+        
         scene.addChild(background)
         self.background = background
 

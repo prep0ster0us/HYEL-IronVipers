@@ -37,8 +37,10 @@ class IVGamePlayState: GKState {
     /// a state can have multiple entry points, this helps check which state calls the current state (i.e. the parent state)
     /// ex: game-over state can be a result of time running out OR no more lives left.
     override func didEnter(from previousState: GKState?) {
+        guard let scene, let context else { return }
         print("did enter main game state")
         
+        BackgroundManager.shared.setup(scene, context)
         setupScoreLabel()
         setupHealthBar()
         setupPlayer()
