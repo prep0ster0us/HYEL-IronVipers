@@ -14,6 +14,7 @@
 		C3363C3C2CD510930006725D /* IVShipNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3363C3B2CD510930006725D /* IVShipNode.swift */; };
 		C3363C3E2CD5123A0006725D /* IVGameIdleState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3363C3D2CD5123A0006725D /* IVGameIdleState.swift */; };
 		C3363C402CD52AC90006725D /* IVBackgroundNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3363C3F2CD52AC90006725D /* IVBackgroundNode.swift */; };
+		C343532B2CEA472800EB96F4 /* IVScrollingBorderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C343532A2CEA472800EB96F4 /* IVScrollingBorderManager.swift */; };
 		C36E1CD62CE852570005AFDB /* IVBackgroundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36E1CD52CE852570005AFDB /* IVBackgroundManager.swift */; };
 		C36E1CDA2CE939460005AFDB /* IVCircleBombManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36E1CD92CE939460005AFDB /* IVCircleBombManager.swift */; };
 		C36E1CDC2CE9452E0005AFDB /* IVCircleBombState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36E1CDB2CE9452E0005AFDB /* IVCircleBombState.swift */; };
@@ -48,6 +49,7 @@
 		C3363C3B2CD510930006725D /* IVShipNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVShipNode.swift; sourceTree = "<group>"; };
 		C3363C3D2CD5123A0006725D /* IVGameIdleState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVGameIdleState.swift; sourceTree = "<group>"; };
 		C3363C3F2CD52AC90006725D /* IVBackgroundNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVBackgroundNode.swift; sourceTree = "<group>"; };
+		C343532A2CEA472800EB96F4 /* IVScrollingBorderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVScrollingBorderManager.swift; sourceTree = "<group>"; };
 		C36E1CD52CE852570005AFDB /* IVBackgroundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVBackgroundManager.swift; sourceTree = "<group>"; };
 		C36E1CD92CE939460005AFDB /* IVCircleBombManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVCircleBombManager.swift; sourceTree = "<group>"; };
 		C36E1CDB2CE9452E0005AFDB /* IVCircleBombState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IVCircleBombState.swift; sourceTree = "<group>"; };
@@ -122,6 +124,7 @@
 				C36E1CD52CE852570005AFDB /* IVBackgroundManager.swift */,
 				C36E1CD92CE939460005AFDB /* IVCircleBombManager.swift */,
 				C36E1CDD2CE972620005AFDB /* IVProjectileManager.swift */,
+				C343532A2CEA472800EB96F4 /* IVScrollingBorderManager.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -298,6 +301,7 @@
 				C3363C382CD510690006725D /* IVGameInfo.swift in Sources */,
 				C3363C3A2CD510760006725D /* IVLayoutInfo.swift in Sources */,
 				C3363C342CD50DA70006725D /* IVGameContext.swift in Sources */,
+				C343532B2CEA472800EB96F4 /* IVScrollingBorderManager.swift in Sources */,
 				C3D35F3F2CCDCB4900BC50A2 /* IronVipersApp.swift in Sources */,
 				C3D35F532CCDD04000BC50A2 /* GameType.swift in Sources */,
 				C36E1CDA2CE939460005AFDB /* IVCircleBombManager.swift in Sources */,

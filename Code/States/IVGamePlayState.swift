@@ -47,7 +47,8 @@ class IVGamePlayState: GKState {
         setupHealthBar()
         setupPlayer()
         
-        ProjectileManager.shared.setup(scene, context, initialMaxProjectiles: 1, initialSpeed: 4.0)
+        BorderManager.shared.setup(scene, context)
+        ProjectileManager.shared.setup(scene, context, initialMaxProjectiles: 1, initialSpeed: 2.0)
     }
     
     override func willExit(to nextState: GKState) {        

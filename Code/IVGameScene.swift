@@ -92,6 +92,9 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             
         } else {
             
+            // scrolling border
+            BorderManager.shared.startScrolling()
+            
             // Calculate delta time
             if lastUpdateTime == 0 {
                 lastUpdateTime = currentTime
@@ -173,78 +176,6 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         return direction.elementsEqual("left") ? -distance : distance
     }
     
-    func enableAutomaticBackgroundSwitching() {
-        BackgroundManager.shared.toggleMode(toAutomatic: true)
-    }
-    
-    func enableManualBackgroundSwitching() {
-        BackgroundManager.shared.toggleMode(toAutomatic: false)
-    }
-    func prepareBackground() {
-        guard let context else {
-            return
-        }
-        let randomPhase = context.gameInfo.currentPhase
-        currentColor = context.gameInfo.bgColor
-        background = SKSpriteNode(color: currentColor, size: size)
-        background?.anchorPoint = CGPointZero
-        background?.position = CGPointZero
-        background?.zPosition = -2
-        background?.alpha = 0.4
-        background?.name = "background"
-        
-        addChild(background!)
-        // track background phase and color
-        context.gameInfo.currentPhase = randomPhase
-        context.gameInfo.bgColor = currentColor
-        
-        switchBackground()
-    }
-    func switchBackground() {
-        guard let context else { return }
-        let waitAction = SKAction.wait(forDuration: context.gameInfo.bgChangeDuration)
-        let changePhase = SKAction.run { [weak self] in
-            self?.cycleToNextColor()
-        }
-        let changeSequence = SKAction.sequence([waitAction, changePhase])
-        run(SKAction.repeatForever(changeSequence))
-    }
-    func cycleToNextColor() {
-        guard let context else { return }
-        
-        let currentPhase = Phase.phase(for: background!.color)
-        let nextPhase = Phase.random(excluding: currentPhase!)
-        let nextColor = nextPhase.color
-        print(nextPhase)
-        
-        let newBackground = SKSpriteNode(color: nextColor, size: size)
-        // Start off-screen (to the left)
-        newBackground.position = CGPoint(x: -size.width / 2, y: size.height / 2)
-        newBackground.zPosition = -2
-        newBackground.alpha = 0.4
-        
-        addChild(newBackground)
-        
-        // Slide-in action for the new background
-        let slideIn = SKAction.moveTo(x: size.width / 2, duration: 1.0)
-        // Slide-out action for the old background
-        let slideOut = SKAction.moveTo(x: size.width * 1.5, duration: 1.0)
-        // actions for removing
-        let removeOldBackground = SKAction.removeFromParent()
-        let oldBackgroundSequence = SKAction.sequence([slideOut, removeOldBackground])
-        
-        // Remove (slide-out) OLD background + Add (slide-in) NEW background
-        background!.run(oldBackgroundSequence)
-        newBackground.run(slideIn) { [weak self] in
-            // Update currentColor and background reference
-            self?.currentColor = nextColor
-            self?.background = newBackground
-            // track changes for background phase and color
-            context.gameInfo.currentPhase = nextPhase
-            context.gameInfo.bgColor = nextColor
-        }
-    }
-    
     func cycleToNextState() {
         guard let context else { return }
         // Get the current state and cycle to the next one
@@ -316,10 +247,13 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             
             if let projectile = (contactA.categoryBitMask == IVGameInfo.player) ? contactB.node : contactA.node {
                 // Remove projectile nodes
-                let fadeOutAction = SKAction.fadeOut(withDuration: 0.3)
+                let fadeOutAction = SKAction.fadeOut(withDuration: 0.1)
                 let removeAction = SKAction.removeFromParent()
                 let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
                 projectile.run(removeSequence)
+                
+                let scale = SKAction.sequence([SKAction.scale(to: 0.5, duration: 0.1), SKAction.scale(to: 0.4, duration: 0.1)])
+                player?.run(scale)
             }
         }
         
@@ -356,10 +290,13 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             
             if let projectile = (contactA.categoryBitMask == IVGameInfo.player) ? contactB.node : contactA.node {
                 // Remove projectile nodes
-                let fadeOutAction = SKAction.fadeOut(withDuration: 0.5)
+                let fadeOutAction = SKAction.fadeOut(withDuration: 0.2)
                 let removeAction = SKAction.removeFromParent()
                 let removeSequence = SKAction.sequence([fadeOutAction, removeAction])
                 projectile.run(removeSequence)
+                
+                let flash = SKAction.sequence([SKAction.fadeOut(withDuration: 0.05), SKAction.fadeIn(withDuration: 0.05)])
+                player?.run(SKAction.repeat(flash, count: 2))
             }
         }
     }
