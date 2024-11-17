@@ -105,7 +105,8 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             
             // Check if it's time to perform the action
             if timeSinceLastAction >= actionInterval {
-                spawnProjectile()
+//                spawnProjectile()
+                ProjectileManager.shared.spawnProjectiles()
                 timeSinceLastAction = 0 // Reset the timer
             }
             

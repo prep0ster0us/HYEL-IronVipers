@@ -70,22 +70,15 @@ class CircleBombManager {
                 x: CGFloat.random(in: maxRadius...(scene.size.width - maxRadius)),
                 y: CGFloat.random(in: maxRadius...(scene.size.height - maxRadius))
             )
-        } while bombs.contains { bomb in
-            let dx = bomb.position.x - position.x
-            let dy = bomb.position.y - position.y
-            let distance = sqrt(dx * dx + dy * dy)
-            return distance < (maxRadius + (bomb.frame.width / 2))  // compare for full scaled bomb size
-        }
-//        { $0.frame.intersects(CGRect(x: position.x - maxRadius,
-//                                                            y: position.y - maxRadius,
-//                                                            width: maxRadius*2,
-//                                                            height: maxRadius*2)) }
+        } while bombs.contains { $0.frame.intersects(CGRect(x: position.x - maxRadius,
+                                                            y: position.y - maxRadius,
+                                                            width: maxRadius*2,
+                                                            height: maxRadius*2)) }
 
         // Create the bomb shape
         let bomb = SKShapeNode(circleOfRadius: 1)  // Start as a dot
         bomb.position = position
         bomb.fillColor = color
-//        bomb.strokeColor = .black  // Add border
         bomb.lineWidth = 0
         bomb.alpha = 0.6
         bomb.name = "colorBomb"
