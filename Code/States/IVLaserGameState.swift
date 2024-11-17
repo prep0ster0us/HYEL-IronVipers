@@ -287,7 +287,8 @@ class IVLaserGameState: GKState {
             return
         }
         // move player to touch location
-        scene.player?.position = touch.location(in: scene)
+        let location = touch.location(in: scene)
+        scene.player?.position = CGPoint(x: location.x-20, y: location.y+20)
     }
     
     func handleTouchMoved(_ touch: UITouch) {
@@ -295,7 +296,8 @@ class IVLaserGameState: GKState {
             return
         }
         // move player to touch location
-        scene.player?.position = touch.location(in: scene)
+        let location = touch.location(in: scene)
+        scene.player?.position = CGPoint(x: location.x-20, y: location.y+20)
     }
     
     func handleTouchEnded(_ touch: UITouch) {
