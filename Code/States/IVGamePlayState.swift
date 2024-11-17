@@ -67,7 +67,7 @@ class IVGamePlayState: GKState {
         let scoreLabel = SKLabelNode(text: "Score: \(context.gameInfo.score)")
         scoreLabel.fontSize = 24
         scoreLabel.position = CGPoint(x: scene.size.width/6.0,
-                                      y: scene.size.height/1.06 )
+                                      y: scene.size.height/1.08 )
         scoreLabel.fontColor = .white
         scoreLabel.zPosition = 1
         scoreLabel.fontName = "AvenirNext-Bold"
@@ -135,7 +135,7 @@ class IVGamePlayState: GKState {
         healthLabel.fontColor = .white
         healthLabel.fontSize = 24
         healthLabel.position = CGPoint(x: scene.size.width / 1.2,
-                                      y: scene.size.height / 1.06)
+                                      y: scene.size.height / 1.08)
         healthLabel.zPosition = 1
         healthLabel.alpha = 0.0
         

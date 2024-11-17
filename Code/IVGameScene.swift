@@ -264,10 +264,10 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             print("hit laser beam")
             
             // Create a shiver effect using small movement actions
-            let moveRight = SKAction.moveBy(x: 8, y: 0, duration: 0.05)
-            let moveLeft = SKAction.moveBy(x: -8, y: 0, duration: 0.05)
+            let moveRight = SKAction.moveBy(x: 5, y: 0, duration: 0.05)
+            let moveLeft = SKAction.moveBy(x: -5, y: 0, duration: 0.05)
             let shiverSequence = SKAction.sequence([moveRight, moveLeft, moveLeft, moveRight])
-            let shiverRepeat = SKAction.repeat(shiverSequence, count: 5)
+            let shiverRepeat = SKAction.repeat(shiverSequence, count: 3)
             
             // Run the shiver action on the player node
             player?.run(shiverRepeat)

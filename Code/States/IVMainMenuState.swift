@@ -111,12 +111,12 @@ class IVMainMenuState: GKState {
         guard let scene else {
             return
         }
-        for _ in 0..<5 {
+        for _ in 0..<7 {
             let dummy = SKSpriteNode(imageNamed: "kirby")
 
             dummy.position = CGPoint(x: CGFloat.random(in: 5...scene.size.width-5.0),
                                      y: scene.size.height / 6.0)
-            dummy.setScale(0.5)
+            dummy.setScale(0.4)
             scene.addChild(dummy)
             dummyPlayers.append(dummy)
         }
