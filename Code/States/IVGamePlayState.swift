@@ -105,7 +105,7 @@ class IVGamePlayState: GKState {
         player.name = "playerNode"
         player.position = CGPoint(x: scene.size.width / 2.0,
                                   y: scene.size.height / 6.0)
-        player.setScale(0.4)
+        player.setScale(1.5)
         player.zPosition = 3          // place behind other nodes (down the z-axis)
         
         let currentPhase = context.gameInfo.currentPhase
