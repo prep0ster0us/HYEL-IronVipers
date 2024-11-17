@@ -5,19 +5,15 @@ class ProjectileManager {
 
     weak var scene: IVGameScene?
     weak var context: IVGameContext?
-    
-    private var maxProjectiles: Int = 1
-    private var projectileSpeed: TimeInterval = 2.0
+
     private let projectileColors: [String] = ["RedParticle", "GreenParticle", "BlueParticle"]
     private var spawnFlag: Bool = true
 
     private init() {}
 
-    func setup(_ scene: IVGameScene,_ context: IVGameContext, initialMaxProjectiles: Int = 1, initialSpeed: TimeInterval = 2.0) {
+    func setup(_ scene: IVGameScene,_ context: IVGameContext) {
         self.scene = scene
         self.context = context
-        self.maxProjectiles = initialMaxProjectiles
-        self.projectileSpeed = initialSpeed
     }
     
     func toggleSpawn(isActive: Bool) {
@@ -25,15 +21,19 @@ class ProjectileManager {
     }
 
     func spawnProjectiles() {
-        guard let scene else { return }
+        guard let scene, let context else { return }
         guard spawnFlag == true else { return }
 
-        for _ in 0..<maxProjectiles {
+        let currentScore = context.gameInfo.score
+        let currentSpeed = context.gameInfo.getProjectileSpeed(for: currentScore)
+        let currentCount = context.gameInfo.getNumberOfProjectiles(for: currentScore)
+        
+        for _ in 0..<currentCount {
             let projectile = createProjectile()
             scene.addChild(projectile)
 
             // Move the projectile
-            let moveAction = SKAction.move(to: projectile.userData?["exitPoint"] as! CGPoint, duration: projectileSpeed)
+            let moveAction = SKAction.move(to: projectile.userData?["exitPoint"] as! CGPoint, duration: currentSpeed)
             let removeAction = SKAction.removeFromParent()
             let sequence = SKAction.sequence([moveAction, removeAction])
             projectile.run(sequence)
@@ -114,8 +114,4 @@ class ProjectileManager {
         }
     }
 
-    func increaseDifficulty(projectileCount: Int, speed: TimeInterval) {
-        maxProjectiles = projectileCount
-        projectileSpeed = speed
-    }
 }

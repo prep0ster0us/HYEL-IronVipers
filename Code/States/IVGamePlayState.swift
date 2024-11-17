@@ -48,7 +48,7 @@ class IVGamePlayState: GKState {
         setupPlayer()
         
         BorderManager.shared.setup(scene, context)
-        ProjectileManager.shared.setup(scene, context, initialMaxProjectiles: 1, initialSpeed: 2.0)
+        ProjectileManager.shared.setup(scene, context)
     }
     
     override func willExit(to nextState: GKState) {        

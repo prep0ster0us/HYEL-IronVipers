@@ -146,8 +146,8 @@ class IVGameOverState: GKState {
         context.gameInfo.health = 100
         
         // scale and place back the score label (for "new" session)
-        let originalPosition = CGPoint(x: scene.size.width/5.8,
-                                       y: scene.size.height/1.06 )
+        let originalPosition = CGPoint(x: scene.size.width/6.0,
+                                       y: scene.size.height/1.08 )
         let scaleAction = SKAction.scale(to: 1.0, duration: 0.2)
         let moveAction = SKAction.move(to: originalPosition , duration: 0.5)
         let fadeIn = SKAction.fadeIn(withDuration: 1.0)

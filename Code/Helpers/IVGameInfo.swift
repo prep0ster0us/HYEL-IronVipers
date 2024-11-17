@@ -60,6 +60,38 @@ struct IVGameInfo {
     var bgColor: SKColor = Phase.RED.color      // random starting value
     var bgChangeDuration = 6.0
     
+    func getProjectileSpeed(for score: Int) -> CGFloat {
+        switch score {
+        case 0...5:
+            return 2.0
+        case 6...10:
+            return 1.5
+        case 11...15:
+            return 1.2
+        case 16...20:
+            return 1.1
+        case 21...25:
+            return 0.8
+        default:
+            return 2.0
+        }
+    }
+    func getNumberOfProjectiles(for score: Int) -> Int {
+        switch score {
+        case 0...5:
+            return 1
+        case 6...10:
+            return 1
+        case 11...15:
+            return 2
+        case 16...20:
+            return 3
+        case 21...25:
+            return 5
+        default:
+            return 1
+        }
+    }
 }
 
 struct LaserNode {
