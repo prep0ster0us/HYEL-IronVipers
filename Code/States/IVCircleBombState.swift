@@ -19,17 +19,14 @@ class IVCircleBombState: GKState {
     }
     
     override func didEnter(from previousState: GKState?) {
-        guard let scene, let context else { return }
+//        guard let scene, let context else { return }
         print("did enter laser game state")
         
         // switch background to manual switching
         BackgroundManager.shared.toggleMode(toAutomatic: false)
         
-        // Set up CircleBombManager and start waves
-        CircleBombManager.shared.setup(scene, context, maxWaves: 2)
-        CircleBombManager.shared.startWaves(bombsPerWave: 3) { [weak self] in
-            self?.showStageCleared()
-        }
+        // show stage warning label
+        showEntryLabel()
         
     }
     override func willExit(to nextState: GKState) {
@@ -38,6 +35,43 @@ class IVCircleBombState: GKState {
     }
     
     /* HELPER METHODS */
+    func showEntryLabel() {
+        guard let scene, let context else { return }
+        // Create the SKLabelNode for the pop-up
+        let label = SKLabelNode(text: "Watch out for the color bombs!")
+        label.fontSize = 36
+        label.fontName = "AmericanTypewriter-Bold"
+        label.fontColor = .yellow
+        label.position = CGPoint(x: scene.size.width / 2.0,
+                                 y: scene.size.height / 2.0 )
+        label.alpha = 0  // Start invisible
+        label.setScale(0)  // Start at zero scale for pop-up effect
+        label.lineBreakMode = .byWordWrapping
+        label.horizontalAlignmentMode = .center
+        label.numberOfLines = 3
+        label.preferredMaxLayoutWidth = scene.size.width-150
+        scene.addChild(label)
+        
+        // Define actions: fade in, scale up (pop-up effect), wait, and fade out
+        let fadeIn = SKAction.fadeIn(withDuration: 0.2)
+        let scaleUp = SKAction.scale(to: 1.2, duration: 0.2)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
+        let wait = SKAction.wait(forDuration: 2.0)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.2)
+        let removeLabel = SKAction.removeFromParent()
+        
+        // Combine actions in sequence
+        let popupSequence = SKAction.sequence([fadeIn, scaleUp, scaleDown, wait, fadeOut, removeLabel])
+        
+        // Run the pop-up sequence on the label
+        label.run(popupSequence) {
+            // Set up CircleBombManager and start waves
+            CircleBombManager.shared.setup(scene, context, maxWaves: 2)
+            CircleBombManager.shared.startWaves(bombsPerWave: 3) { [weak self] in
+                self?.showStageCleared()
+            }
+        }
+    }
 
     func showStageCleared() {
         guard let scene, let context else { return }
