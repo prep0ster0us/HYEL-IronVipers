@@ -40,6 +40,7 @@ class IVColorWaveState: GKState {
         let toggle = SKAction.run{ BackgroundManager.shared.toggleMode(toAutomatic: false) }
         scene?.run(SKAction.sequence([delay, toggle]))
         
+        ProjectileManager.shared.toggleSpawn(isActive: false)
         // show stage warning label
         showEntryLabel()
     }
@@ -126,6 +127,7 @@ class IVColorWaveState: GKState {
     func checkIfEndStage() {
         if isFinalStage() {
             print("all wave stages cleared")
+            ProjectileManager.shared.toggleSpawn(isActive: false)
             displayStageCleared()
             updateScore()
         }
@@ -166,6 +168,7 @@ class IVColorWaveState: GKState {
         
         // Run the pop-up sequence on the label
         label.run(popupSequence) {
+            ProjectileManager.shared.toggleSpawn(isActive: true)
             self.generateWave = true
         }
     }
@@ -195,6 +198,7 @@ class IVColorWaveState: GKState {
         
         // Run the pop-up sequence on the label
         label.run(popupSequence) {
+            ProjectileManager.shared.toggleSpawn(isActive: true)
             // go back to main game state
             context.stateMachine?.enter(IVGamePlayState.self)
         }

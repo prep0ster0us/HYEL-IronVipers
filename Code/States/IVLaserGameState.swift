@@ -39,9 +39,7 @@ class IVLaserGameState: GKState {
     override func didEnter(from previousState: GKState?) {
         print("did enter laser game state")
         
-//        setupPlayer()
-//        spawnLaserNodes()
-//        setupBackground()
+        ProjectileManager.shared.toggleSpawn(isActive: false)
         showEntryLabel()
 
     }
@@ -85,6 +83,7 @@ class IVLaserGameState: GKState {
         
         // Run the pop-up sequence on the label
         label.run(popupSequence) {
+            ProjectileManager.shared.toggleSpawn(isActive: true)
             let spawnLaserAction = SKAction.run { [self] in
                 for _ in 0..<3 {
                     spawnLaserNodes()
@@ -230,6 +229,7 @@ class IVLaserGameState: GKState {
         startNode.run(removeSequence)
         endNode.run(removeSequence)
         laserBeam.run(removeSequence) { [weak self] in
+            ProjectileManager.shared.toggleSpawn(isActive: false)
             // Once the last laser beam has faded, display the label
             self?.showSuccessLabel()
         }
@@ -263,6 +263,7 @@ class IVLaserGameState: GKState {
             let delay = SKAction.wait(forDuration: 0.5)
             let goBack = SKAction.run {
                 // go back to main game play state
+                ProjectileManager.shared.toggleSpawn(isActive: true)
                 context.stateMachine?.enter(IVGamePlayState.self)
             }
             scene.run(SKAction.sequence([delay, goBack]))

@@ -25,6 +25,7 @@ class IVCircleBombState: GKState {
         // switch background to manual switching
         BackgroundManager.shared.toggleMode(toAutomatic: false)
         
+        ProjectileManager.shared.toggleSpawn(isActive: false)
         // show stage warning label
         showEntryLabel()
         
@@ -65,9 +66,11 @@ class IVCircleBombState: GKState {
         
         // Run the pop-up sequence on the label
         label.run(popupSequence) {
+            ProjectileManager.shared.toggleSpawn(isActive: true)
             // Set up CircleBombManager and start waves
             CircleBombManager.shared.setup(scene, context, maxWaves: 2)
             CircleBombManager.shared.startWaves(bombsPerWave: 3) { [weak self] in
+                ProjectileManager.shared.toggleSpawn(isActive: false)
                 self?.showStageCleared()
             }
         }
@@ -96,6 +99,7 @@ class IVCircleBombState: GKState {
         let popupSequence = SKAction.sequence([fadeIn, scaleUp, scaleDown, wait, fadeOut, removeLabel])
         
         label.run(popupSequence) {
+            ProjectileManager.shared.toggleSpawn(isActive: true)
             // navigate back to "normal" game play
             context.stateMachine?.enter(IVGamePlayState.self)
         }

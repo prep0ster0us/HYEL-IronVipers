@@ -9,6 +9,7 @@ class ProjectileManager {
     private var maxProjectiles: Int = 1
     private var projectileSpeed: TimeInterval = 2.0
     private let projectileColors: [String] = ["RedParticle", "GreenParticle", "BlueParticle"]
+    private var spawnFlag: Bool = true
 
     private init() {}
 
@@ -18,9 +19,14 @@ class ProjectileManager {
         self.maxProjectiles = initialMaxProjectiles
         self.projectileSpeed = initialSpeed
     }
+    
+    func toggleSpawn(isActive: Bool) {
+        spawnFlag = isActive
+    }
 
     func spawnProjectiles() {
         guard let scene else { return }
+        guard spawnFlag == true else { return }
 
         for _ in 0..<maxProjectiles {
             let projectile = createProjectile()
@@ -56,6 +62,25 @@ class ProjectileManager {
         emitter.physicsBody?.contactTestBitMask = IVGameInfo.player
         emitter.physicsBody?.collisionBitMask = IVGameInfo.none
         emitter.physicsBody?.affectedByGravity = false
+        
+        // TODO: got the shooting angle working; just need to figure out the size of projectile head
+//        // get angle of movement
+//        let dx = exitPoint.x - spawnPoint.x
+//        let dy = exitPoint.y - spawnPoint.y
+//        let angle = atan2(dy, dx)
+//        // Configure particle behavior
+//        emitter.particleBirthRate = 50  // Adjust for denser trails
+//        emitter.particleLifetime = 1.0  // Short lifetime for concise trails
+//        emitter.particleSpeed = 100     // Speed of the particles
+//        emitter.particleSpeedRange = 20 // Add some variation
+//        emitter.emissionAngle = angle + .pi  // Emit backward (relative to emitter's rotation)
+//        emitter.emissionAngleRange = .pi / 8  // Slight spread for a natural look
+//        
+//        // Add other visual adjustments
+//        emitter.particleAlpha = 0.8
+//        emitter.particleAlphaRange = 0.2
+//        emitter.particleScale = 0.5
+//        emitter.particleScaleRange = 0.4
 
         return emitter
     }
