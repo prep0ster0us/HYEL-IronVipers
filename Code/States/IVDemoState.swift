@@ -8,6 +8,7 @@ class IVDemoState: GKState {
     
     var handNode: SKSpriteNode?
     var background: SKSpriteNode?
+    var isTapReady: Bool = false
     
     init(scene: IVGameScene, context: IVGameContext) {
         self.scene = scene
@@ -73,8 +74,6 @@ class IVDemoState: GKState {
         let scaleUp = SKAction.scale(to: 1.2, duration: 0.2)
         let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
         let wait = SKAction.wait(forDuration: 1.0)
-//        let fadeOut = SKAction.fadeOut(withDuration: 0.2)
-//        let removeLabel = SKAction.removeFromParent()
         
         // Combine actions in sequence
         let popupSequence = SKAction.sequence([fadeIn, scaleUp, scaleDown, wait])
@@ -83,9 +82,11 @@ class IVDemoState: GKState {
         instructionLabel.run(popupSequence) {
             self.nextLabel()
         }
+        
+        isTapReady = false
     }
     func nextLabel() {
-        guard let scene, let context else { return }
+        guard let scene else { return }
         // Add tutorial instructions
         let instructionLabel = SKLabelNode(text: "Collect obstacles with SAME color")
         instructionLabel.fontSize = 32
@@ -113,31 +114,52 @@ class IVDemoState: GKState {
         
         // Run the pop-up sequence on the label
         instructionLabel.run(popupSequence) {
-            // Transition to the next game state after the label disappears
-            context.stateMachine?.enter(IVGamePlayState.self)
+            self.showTapToPlayLabel()
         }
+    }
+    func showTapToPlayLabel() {
+        guard let scene else { return }
+        // Add tutorial instructions
+        let tapLabel = SKLabelNode(text: "TAP TO PLAY")
+        tapLabel.fontSize = 24
+        tapLabel.fontName = "Century-Gothic-Bold"
+        tapLabel.fontColor = .white
+        tapLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height/11)
+        tapLabel.name = "tapToPlayLabel"
+
+        tapLabel.run(SKAction.fadeIn(withDuration: 0.5))  {
+            self.isTapReady = true
+        }
+        scene.addChild(tapLabel)
     }
     
     func createHandDragAnimation() -> SKAction {
         // Animate the hand moving in a drag motion
-        let moveRight = SKAction.moveTo(x: 100, duration: 1.2)
-        let moveLeft = SKAction.moveTo(x: (scene?.size.width)!-100, duration: 1.2)
+        let moveRight = SKAction.moveTo(x: 100, duration: 1.5)
+        let moveLeft = SKAction.moveTo(x: (scene?.size.width)!-100, duration: 1.5)
         return SKAction.sequence([moveRight, moveLeft])
     }
     
     override func willExit(to nextState: GKState) {
         // Remove the hand and instruction label
-        scene?.childNode(withName: "demoLabel")?.removeFromParent()
-        scene?.childNode(withName: "instructionLabel1")?.removeFromParent()
-        scene?.childNode(withName: "instructionLabel2")?.removeFromParent()
-        scene?.childNode(withName: "demoBG")?.removeFromParent()
-        handNode?.removeFromParent()
+        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+        let remove = SKAction.removeFromParent()
+        let removeSequence = SKAction.sequence([fadeOut, remove])
+        scene?.childNode(withName: "demoLabel")?.run(removeSequence)
+        scene?.childNode(withName: "instructionLabel1")?.run(removeSequence)
+        scene?.childNode(withName: "instructionLabel2")?.run(removeSequence)
+        scene?.childNode(withName: "tapToPlayLabel")?.run(removeSequence)
+        scene?.childNode(withName: "demoBG")?.run(removeSequence)
+        handNode?.run(removeSequence)
+        
     }
     
-    func handleTouchMoved(_ touch: UITouch) {
+    func handleTouch(_ touch: UITouch) {
         guard let scene, let context else { return }
+        guard isTapReady else { return }
         // Transition to the main game state when the user interacts
-        scene.run(SKAction.wait(forDuration: 3.5)) {
+        print("touched on demo")
+        scene.run(SKAction.wait(forDuration: 0.5)) {
             context.stateMachine?.enter(IVGamePlayState.self)
         }
     }

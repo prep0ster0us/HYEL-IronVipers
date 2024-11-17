@@ -16,6 +16,7 @@ class BorderManager {
     private let leftBorderTexture: SKTexture = SKTexture(imageNamed: "border-left")
     private let rightBorderTexture: SKTexture = SKTexture(imageNamed: "border-right")
     private let scrollSpeed: TimeInterval = 5.0
+    private let zPos: CGFloat = 4
 
     private init() {}
 
@@ -35,7 +36,7 @@ class BorderManager {
         leftTop.size = CGSize(width: borderWidth, height: screenHeight)
         leftTop.anchorPoint = CGPointZero
         leftTop.position = CGPointZero
-        leftTop.zPosition = 4
+        leftTop.zPosition = zPos
         leftTop.name = "leftBorder"
         scene.addChild(leftTop)
         
@@ -43,7 +44,7 @@ class BorderManager {
         leftBottom.size = borderSize
         leftBottom.anchorPoint = CGPointZero
         leftBottom.position = CGPointMake(0, leftBottom.size.height-1)
-        leftBottom.zPosition = 4
+        leftBottom.zPosition = zPos
         leftBottom.name = "leftBorder"
         scene.addChild(leftBottom)
 
@@ -52,7 +53,7 @@ class BorderManager {
         rightTop.size = borderSize
         rightTop.anchorPoint = CGPointZero
         rightTop.position = CGPointMake(scene.size.width-borderWidth, 0)
-        rightTop.zPosition = 4
+        rightTop.zPosition = zPos
         rightTop.name = "rightBorder"
         scene.addChild(rightTop)
         
@@ -60,7 +61,7 @@ class BorderManager {
         rightBottom.size = borderSize
         rightBottom.anchorPoint = CGPointZero
         rightBottom.position = CGPointMake(scene.size.width-borderWidth, rightBottom.size.height-1)
-        rightBottom.zPosition = 4
+        rightBottom.zPosition = zPos
         rightBottom.name = "rightBorder"
         scene.addChild(rightBottom)
 

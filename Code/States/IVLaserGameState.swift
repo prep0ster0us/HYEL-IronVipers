@@ -120,11 +120,13 @@ class IVLaserGameState: GKState {
         let startNode = SKSpriteNode(color: .red, size: CGSize(width: 30, height: 30))
         startNode.position = startPos
         startNode.alpha = 0
+        startNode.zPosition = 5
         scene.addChild(startNode)
         
         let endNode = SKSpriteNode(color: .red, size: CGSize(width: 30, height: 30))
         endNode.position = endPos
         endNode.alpha = 0
+        endNode.zPosition = 5
         scene.addChild(endNode)
         
         // Slide in animation
