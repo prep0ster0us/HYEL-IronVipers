@@ -40,7 +40,9 @@ class IVGamePlayState: GKState {
         guard let scene, let context else { return }
         print("did enter main game state")
         
-        BackgroundManager.shared.setup(scene, context)
+        if scene.childNode(withName: "background") == nil {
+            BackgroundManager.shared.setup(scene, context)
+        }
         setupScoreLabel()
         setupHealthBar()
         setupPlayer()

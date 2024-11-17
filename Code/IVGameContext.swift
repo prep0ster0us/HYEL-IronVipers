@@ -40,7 +40,8 @@ class IVGameContext: GameContext {
             IVGameOverState(scene: gameScene, context: self),
             IVLaserGameState(scene: gameScene, context: self),
             IVFollowPathState(scene: gameScene, context: self),
-            IVColorWaveState(scene: gameScene, context: self)
+            IVColorWaveState(scene: gameScene, context: self),
+            IVCircleBombState(scene: gameScene, context: self)
         ])
         // the state machine object will include difference scenarios happening in the game
         // ex: when the game starts, if we want an animation to play before actually letting the user move around;

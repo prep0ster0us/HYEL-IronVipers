@@ -24,6 +24,7 @@ struct IVGameInfo {
     var waveCount = 5
     var waveStages = 3
     var pathProximity: CGFloat = 30.0
+    var bombPenalty = 1
     
     let bgColors: [SKColor] = [.blue, .purple, .orange, .red, .green]
     // TODO: expand to include all properties for the game session

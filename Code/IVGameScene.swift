@@ -121,6 +121,9 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
                 currentState.spawnColorWave()
                 currentState.detectPlayerContact()
             }
+            if let currentState = context.stateMachine?.currentState as? IVCircleBombState {
+                currentState.detectPlayerContact()
+            }
         }
     
     }
@@ -430,6 +433,9 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         if let gamePlayState = context?.stateMachine?.currentState as? IVColorWaveState  {
             gamePlayState.handleTouch(touch)
         }
+        if let gamePlayState = context?.stateMachine?.currentState as? IVCircleBombState  {
+            gamePlayState.handleTouch(touch)
+        }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -450,6 +456,9 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             gamePlayState.handleTouchMoved(touch)
         }
         if let gamePlayState = context?.stateMachine?.currentState as? IVDemoState  {
+            gamePlayState.handleTouchMoved(touch)
+        }
+        if let gamePlayState = context?.stateMachine?.currentState as? IVCircleBombState  {
             gamePlayState.handleTouchMoved(touch)
         }
     }
