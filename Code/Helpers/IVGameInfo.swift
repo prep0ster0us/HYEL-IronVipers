@@ -19,9 +19,9 @@ struct IVGameInfo {
     var projectilePenalty = 5
     var laserPenalty = 10
     var laserReward = 5
-    var wavePenalty = 3
+    var wavePenalty = 1
     var waveReward = 5
-    var waveCount = 5
+    var waveCount = 7
     var waveStages = 3
     var pathProximity: CGFloat = 30.0
     var bombPenalty = 1

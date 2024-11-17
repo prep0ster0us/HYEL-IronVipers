@@ -13,6 +13,8 @@ class IVColorWaveState: GKState {
     var waveActive: Bool = false
     var generateWave: Bool = false
     
+    var damageTimers: [SKSpriteNode: Timer] = [:]  // Track timers for each wave
+    
     /// STEP-2: initialize these values for each state
     init(scene: IVGameScene, context: IVGameContext) {
         self.scene = scene
@@ -74,7 +76,8 @@ class IVColorWaveState: GKState {
             wavePos.append(randomY)
             
             // random wave color = different from current background phase
-            let waveColor = Phase.any().color
+//            let waveColor = Phase.any().color
+            let waveColor = Phase.random(excluding: context.gameInfo.currentPhase).color
             
             // randonmize spawn (left or right)
             let randomNum = CGFloat.random(in: 0...1)
@@ -201,17 +204,36 @@ class IVColorWaveState: GKState {
         guard let scene, let context else { return }
         scene.enumerateChildNodes(withName: "colorWave") { node, _ in
             if let wave = node as? SKSpriteNode {
-                if wave.color == context.gameInfo.bgColor {
-                    return
-                }
                 let waveFrame = wave.frame.insetBy(dx: -10, dy: -10)  // Slightly larger frame for contact detection
-                if waveFrame.contains(scene.player!.position) {
-                    self.playerHitByWave()
+                if scene.player!.intersects(SKShapeNode(rect: waveFrame)) {
+                    // player contact with wave
+                    if wave.color == context.gameInfo.bgColor {
+                        print("same color wave")
+                    } else {
+                        self.startDamage(for: wave)
+                    }
+                } else {
+                    // no contact with wave
+                    self.stopDamage(for: wave)
                 }
             }
         }
     }
-    func playerHitByWave() {
+    func startDamage(for wave: SKSpriteNode) {
+        if damageTimers[wave] != nil { return }
+        
+        let timer = Timer.scheduledTimer(withTimeInterval: 0.6, repeats: true) { [weak self] _ in
+            self?.playerHitByWave(for: wave)
+        }
+        damageTimers[wave] = timer
+    }
+    func stopDamage(for wave: SKSpriteNode) {
+        if let timer = damageTimers[wave] {
+            timer.invalidate()
+            damageTimers.removeValue(forKey: wave)
+        }
+    }
+    func playerHitByWave(for wave: SKSpriteNode) {
         guard let scene, let context else { return }
         // Decrease HP only if the player isn't already in the wave
         updateHealth(penalty: context.gameInfo.wavePenalty)
@@ -222,6 +244,7 @@ class IVColorWaveState: GKState {
 
         if context.gameInfo.health < context.gameInfo.testHealth {
             print("no HP left")
+            stopDamage(for: wave)
             context.stateMachine?.enter(IVGameOverState.self)
         }
     }
