@@ -50,8 +50,8 @@ class ProjectileManager {
         emitter.userData = ["exitPoint": exitPoint]
 
         // Configure physics
-        emitter.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: emitter.particleSize.width,
-                                                                height: emitter.particleSize.height) )
+        emitter.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 25,
+                                                                height: 25) )
         emitter.physicsBody?.categoryBitMask = IVGameInfo.projectileMask[colorName]!
         emitter.physicsBody?.contactTestBitMask = IVGameInfo.player
         emitter.physicsBody?.collisionBitMask = IVGameInfo.none
