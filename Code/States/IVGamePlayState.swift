@@ -82,14 +82,12 @@ class IVGamePlayState: GKState {
         guard let context else {
             return
         }
-        //        let scoreLabel = scene?.childNode(withName: "scoreNode") as! SKLabelNode
-        //        scoreLabel.text = "Score: \(context.gameInfo.score)"
         if localScore > context.gameInfo.transitionScore {
-            print("go into laser game")
-            context.stateMachine?.enter(IVLaserGameState.self)
+            print("go into some game stage")
+            context.stateMachine?.enter(context.stateList.randomElement()!)
         }
         if context.gameInfo.score < context.gameInfo.gameEndScore {
-            print("go into laser game")
+            print("game over")
             context.stateMachine?.enter(IVGameOverState.self)
         }
     }

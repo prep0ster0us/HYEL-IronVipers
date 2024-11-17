@@ -18,6 +18,7 @@ class IVGameContext: GameContext {
     let gameMode: GameModeType
     var gameInfo: IVGameInfo
     var layoutInfo: IVLayoutInfo = .init(screenSize: .zero)
+    var stateList: [AnyClass] = []
     
     private(set) var stateMachine: GKStateMachine?
     
@@ -47,6 +48,11 @@ class IVGameContext: GameContext {
         // ex: when the game starts, if we want an animation to play before actually letting the user move around;
         // need to specify that state (so that no other code is running in that time frame)
         // isolate some code execution till it's finished (only then can the other states access the nodes/screen)
+        stateList = [
+            IVLaserGameState.self,
+            IVColorWaveState.self,
+            IVCircleBombState.self
+        ]
     }
     
 }

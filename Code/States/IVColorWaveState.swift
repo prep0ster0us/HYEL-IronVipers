@@ -32,13 +32,24 @@ class IVColorWaveState: GKState {
     /// ex: game-over state can be a result of time running out OR no more lives left.
     override func didEnter(from previousState: GKState?) {
         print("did enter color wave game state")
+        
+        // switch background to manual switching
+        let delay = SKAction.wait(forDuration: 1.0)
+        let toggle = SKAction.run{ BackgroundManager.shared.toggleMode(toAutomatic: false) }
+        scene?.run(SKAction.sequence([delay, toggle]))
+        
+        // show stage warning label
+        showEntryLabel()
     }
     
     override func willExit(to nextState: GKState) {
         waveStageCount = 0
 
         // reset wave generation flag
-        generateWave = true
+        generateWave = false
+        
+        // switch background back to automatic switching
+        BackgroundManager.shared.toggleMode(toAutomatic: true)
     }
     
     func spawnColorWave() {
@@ -63,7 +74,6 @@ class IVColorWaveState: GKState {
             wavePos.append(randomY)
             
             // random wave color = different from current background phase
-//            let wavePhase = Phase.allCases.filter { $0 != Phase.phase(for: background!.color) }.randomElement()!
             let waveColor = Phase.any().color
             
             // randonmize spawn (left or right)
@@ -87,6 +97,8 @@ class IVColorWaveState: GKState {
             
             let moveAction = SKAction.moveTo(x: endX, duration: 3.0)
             let removeAction = SKAction.removeFromParent()
+            let switchDelay = SKAction.wait(forDuration: 1.0)
+            let switchAction = SKAction.run { BackgroundManager.shared.manuallySwitchBackground() }
             let checkAction = SKAction.run { [weak self] in
                 guard let self = self else { return }
                 waveActive = false
@@ -95,7 +107,7 @@ class IVColorWaveState: GKState {
                 checkIfEndStage()
             }
             if i == waveCount-1 {
-                wave.run(SKAction.sequence([moveAction, removeAction, checkAction, SKAction.wait(forDuration: 1.0)]))
+                wave.run(SKAction.sequence([moveAction, removeAction, switchAction, switchDelay, checkAction, SKAction.wait(forDuration: 1.0)]))
             } else {
                 wave.run(SKAction.sequence([moveAction, removeAction, checkAction, SKAction.wait(forDuration: 1.0)]))
             }
@@ -125,7 +137,35 @@ class IVColorWaveState: GKState {
             scoreLabel.text = "Score: \(context.gameInfo.score)"
         }
     }
-    
+    func showEntryLabel() {
+        guard let scene else { return }
+        // Create the SKLabelNode for the pop-up
+        let label = SKLabelNode(text: "Survive the waves!")
+        label.fontSize = 36
+        label.fontName = "AmericanTypewriter-Bold"
+        label.fontColor = .yellow
+        label.position = CGPoint(x: scene.size.width / 2.0,
+                                 y: scene.size.height / 2.0 )
+        label.alpha = 0  // Start invisible
+        label.setScale(0)  // Start at zero scale for pop-up effect
+        scene.addChild(label)
+        
+        // Define actions: fade in, scale up (pop-up effect), wait, and fade out
+        let fadeIn = SKAction.fadeIn(withDuration: 0.2)
+        let scaleUp = SKAction.scale(to: 1.2, duration: 0.2)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
+        let wait = SKAction.wait(forDuration: 2.0)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.2)
+        let removeLabel = SKAction.removeFromParent()
+        
+        // Combine actions in sequence
+        let popupSequence = SKAction.sequence([fadeIn, scaleUp, scaleDown, wait, fadeOut, removeLabel])
+        
+        // Run the pop-up sequence on the label
+        label.run(popupSequence) {
+            self.generateWave = true
+        }
+    }
     
     func displayStageCleared() {
         guard let scene, let context else { return }
@@ -152,7 +192,7 @@ class IVColorWaveState: GKState {
         
         // Run the pop-up sequence on the label
         label.run(popupSequence) {
-            // Transition to the next game state after the label disappears
+            // go back to main game state
             context.stateMachine?.enter(IVGamePlayState.self)
         }
     }
