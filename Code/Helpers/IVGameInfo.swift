@@ -31,7 +31,7 @@ struct IVGameInfo {
     
     //Difficulty
     static var difficulty: UInt32 = 0   //every X seconds, increase by one
-    static var difficulRankUpDelay: CGFloat = 15.0  //5 seconds?
+    static var difficulRankUpDelay: CGFloat = 30.0  //5 seconds?
     
     // Physics Body Categories (for collision detection)
     static let none: UInt32 = 0
@@ -107,15 +107,15 @@ struct IVGameInfo {
     static func getCurStateInterval() -> TimeInterval {
         switch IVGameInfo.difficulty {
         case 0...10:
-            return 30.0
+            return 90.0
         case 11...20:
-            return 24.0
+            return 72.0
         case 20...25:
-            return 18.0
+            return 54.0
         case 25...32:
-            return 15.0
+            return 45.0
         default:
-            return 10.0
+            return 15.0
         }
     }
 }

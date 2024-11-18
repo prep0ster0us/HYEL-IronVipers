@@ -29,7 +29,7 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var lastStateChangeTime: TimeInterval = 0
     private var stateChangeDeltaTime: TimeInterval = 0
-    private var stateChangeInterval: TimeInterval = 15  // Change state every 5 seconds
+    private var stateChangeInterval: TimeInterval = IVGameInfo.getCurStateInterval()  // Change state every 5 seconds
     private var timeSinceStateChangeAction: TimeInterval = 0
     
     private var dificultyTickDelay: CGFloat = IVGameInfo.difficulRankUpDelay
