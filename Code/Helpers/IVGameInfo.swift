@@ -59,7 +59,12 @@ struct IVGameInfo {
         "GreenParticle": greenProjectile
     ]
     
-    let player = SKSpriteNode(imageNamed: "rocket")
+    let player = SKSpriteNode(imageNamed: "red-rocket-ship")
+    let nodeTexture = [
+        Phase.RED.color : "red-rocket-ship",
+        Phase.GREEN.color : "green-rocket-ship",
+        Phase.BLUE.color : "blue-rocket-ship"
+    ]
     var currentPhase: Phase = Phase.RED         // random starting value
     var bgColor: SKColor = Phase.RED.color      // random starting value
     var bgChangeDuration = 6.0
