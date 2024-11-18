@@ -26,7 +26,7 @@ class ProjectileManager {
 
         // adjust speed and count based on elapsed game time
         let baseSpeed: TimeInterval = 2.0
-        let minSpeed: TimeInterval = 0.8
+        let minSpeed: TimeInterval = 0.6
         let currentSpeed = max(baseSpeed - (elapsedTime / 65.0), minSpeed) // Gradually decrease speed
         // reduce by 0.2 every 13seconds ***
         

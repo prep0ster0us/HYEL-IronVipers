@@ -118,14 +118,14 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             // Gradually decrease action interval to spawn faster
-            print(elapsedGameTime)
-            actionInterval = max(0.5, 1.2 - (elapsedGameTime / 75))
+            actionInterval = max(0.4, 1.2 - (elapsedGameTime / 65))
             // Min interval = 0.5 seconds
-            // reduce by 0.2 every 15seconds ***
+            // reduce by 0.2 every 13seconds ***
             
             // shoot projectiles (from player)
             if let currentState = context.stateMachine?.currentState as? IVGamePlayState {
                 currentState.updateScore()
+                currentState.spawnGameStage(deltaTime)
             }
             
             if let currentState = context.stateMachine?.currentState as? IVFollowPathState {

@@ -19,6 +19,9 @@ class IVGamePlayState: GKState {
     var background: SKSpriteNode?
     var localScore = 0         // to transition to other states periodically
     
+    private var elapsedTime: TimeInterval = 0.0
+    private let stageSwitchInterval: TimeInterval = 10.0  // Time before switching states
+
     /// STEP-2: initialize these values for each state
     init(scene: IVGameScene, context: IVGameContext) {
         self.scene = scene
@@ -40,6 +43,8 @@ class IVGamePlayState: GKState {
         guard let scene, let context else { return }
         print("did enter main game state")
         
+        elapsedTime = 0.0  // Reset the timer
+        
         if scene.childNode(withName: "background") == nil {
             BackgroundManager.shared.setup(scene, context)
         }
@@ -54,6 +59,16 @@ class IVGamePlayState: GKState {
     override func willExit(to nextState: GKState) {        
         // reset local score
         localScore = 0
+    }
+    
+    func spawnGameStage(_ delta: TimeInterval) {
+        guard let context else { return }
+        elapsedTime += delta
+        
+        // Check if it's time to switch to a stage
+        if elapsedTime >= stageSwitchInterval {
+            context.stateMachine?.enter(context.stateList.randomElement()!)
+        }
     }
     
     func setupScoreLabel() {
@@ -81,11 +96,6 @@ class IVGamePlayState: GKState {
     func updateScore() {
         guard let context else {
             return
-        }
-        if localScore > context.gameInfo.transitionScore {
-            print("go into some game stage")
-            context.stateMachine?.enter(context.stateList.randomElement()!)
-//            context.stateMachine?.enter(IVLaserGameState.self)
         }
         if context.gameInfo.score < context.gameInfo.gameEndScore {
             print("game over")
