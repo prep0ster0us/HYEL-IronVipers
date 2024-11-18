@@ -253,7 +253,7 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
                 projectile.run(removeSequence)
                 
 //                let scale = SKAction.sequence([SKAction.scale(to: 0.5, duration: 0.1), SKAction.scale(to: 0.4, duration: 0.1)])
-                let scale = SKAction.sequence([SKAction.scale(to: 1.8, duration: 0.1), SKAction.scale(to: 1.5, duration: 0.1)])
+                let scale = SKAction.sequence([SKAction.scale(to: 0.8, duration: 0.1), SKAction.scale(to: 0.6, duration: 0.1)])
                 player?.run(scale)
             }
         }

@@ -78,7 +78,17 @@ class BackgroundManager {
         background.run(SKAction.sequence([slideOut, removeAction]))
         
         let slideIn = SKAction.moveTo(x: scene.size.width / 2, duration: 1.0)
-        newBackground.run(slideIn) { [weak self] in
+        let updatePlayerTexture = SKAction.run {
+            // update player texture
+            let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+            let changeTexture = SKAction.run {
+                scene.player!.texture = SKTexture(imageNamed: context.gameInfo.nodeTexture[nextColor]!)
+            }
+            let fadeIn = SKAction.fadeIn(withDuration: 0.5)
+            let transition = SKAction.sequence([fadeOut, changeTexture, fadeIn])
+            scene.player!.run(transition)
+        }
+        newBackground.run(SKAction.group([slideIn, updatePlayerTexture])) { [weak self] in
             // update color and background reference
             self?.currentColor = nextColor
             self?.background = newBackground
