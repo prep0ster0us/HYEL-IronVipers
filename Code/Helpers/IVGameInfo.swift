@@ -72,15 +72,15 @@ struct IVGameInfo {
     func getProjectileSpeed(for score: Int) -> CGFloat {
         switch IVGameInfo.difficulty {
         case 0...5:
-            return 2.0
+            return 3.2
         case 6...10:
             return 2.5
         case 11...18:
             return 2.0
         case 18...23:
-            return 1.3
+            return 1.5
         case 24...30:
-            return 1.0
+            return 1.3
         default:
             return 0.7
         }
