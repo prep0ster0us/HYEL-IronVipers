@@ -15,7 +15,7 @@ struct IVGameInfo {
     var health = 100
     var testHealth = 0
     var gameEndScore = 0
-    var transitionScore = 1
+    var transitionScore = 5
     var projectilePenalty = 5
     var laserPenalty = 10
     var laserReward = 5
@@ -72,7 +72,7 @@ struct IVGameInfo {
     func getProjectileSpeed(for score: Int) -> CGFloat {
         switch IVGameInfo.difficulty {
         case 0...5:
-            return 3.2
+            return 2.0
         case 6...10:
             return 2.5
         case 11...18:

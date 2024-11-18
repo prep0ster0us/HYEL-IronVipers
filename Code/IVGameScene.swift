@@ -24,8 +24,9 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
     // time variables
     private var lastUpdateTime: TimeInterval = 0
     private var deltaTime: TimeInterval = 0
-    private var actionInterval: TimeInterval = 1.0
+    private var actionInterval: TimeInterval = 1.2
     private var timeSinceLastAction: TimeInterval = 0
+    private var elapsedGameTime: TimeInterval = 0.0  // Total time since game start
     
     private var lastStateChangeTime: TimeInterval = 0
     private var stateChangeDeltaTime: TimeInterval = 0
@@ -113,19 +114,28 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             deltaTime = currentTime - lastUpdateTime
             lastUpdateTime = currentTime
             
+            // Update elapsed game time
+            elapsedGameTime += deltaTime
+            
             // Update time since last action
             timeSinceLastAction += deltaTime
             
             // Check if it's time to perform the action
             if timeSinceLastAction >= actionInterval {
 //                spawnProjectile()
-                ProjectileManager.shared.spawnProjectiles()
+                ProjectileManager.shared.spawnProjectiles(elapsedGameTime)
                 timeSinceLastAction = 0 // Reset the timer
             }
+            
+            // Gradually decrease action interval to spawn faster
+            actionInterval = max(0.4, 1.2 - (elapsedGameTime / 65))
+            // Min interval = 0.5 seconds
+            // reduce by 0.2 every 13seconds ***
             
             // shoot projectiles (from player)
             if let currentState = context.stateMachine?.currentState as? IVGamePlayState {
                 currentState.updateScore()
+                currentState.spawnGameStage(deltaTime)
             }
             
             if let currentState = context.stateMachine?.currentState as? IVFollowPathState {
