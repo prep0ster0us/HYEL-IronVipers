@@ -20,13 +20,20 @@ class ProjectileManager {
         spawnFlag = isActive
     }
 
-    func spawnProjectiles() {
-        guard let scene, let context else { return }
+    func spawnProjectiles(_ elapsedTime: TimeInterval) {
+        guard let scene else { return }
         guard spawnFlag == true else { return }
 
-        let currentScore = context.gameInfo.score
-        let currentSpeed = context.gameInfo.getProjectileSpeed(for: currentScore)
-        let currentCount = context.gameInfo.getNumberOfProjectiles(for: currentScore)
+        // adjust speed and count based on elapsed game time
+        let baseSpeed: TimeInterval = 2.0
+        let minSpeed: TimeInterval = 0.8
+        let currentSpeed = max(baseSpeed - (elapsedTime / 65.0), minSpeed) // Gradually decrease speed
+        // reduce by 0.2 every 13seconds ***
+        
+        let baseCount = 1
+        let maxCount = 5
+        let currentCount = min(baseCount + Int(elapsedTime / 65.0), maxCount) // Gradually increase count
+        // reduce by 0.2 every 13seconds ***
         
         for _ in 0..<currentCount {
             let projectile = createProjectile()
