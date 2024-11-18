@@ -29,8 +29,10 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var lastStateChangeTime: TimeInterval = 0
     private var stateChangeDeltaTime: TimeInterval = 0
-    private let stateChangeInterval: TimeInterval = 15  // Change state every 5 seconds
+    private var stateChangeInterval: TimeInterval = 15  // Change state every 5 seconds
     private var timeSinceStateChangeAction: TimeInterval = 0
+    
+    private var dificultyTickDelay: CGFloat = IVGameInfo.difficulRankUpDelay
     
     init(context: IVGameContext, size: CGSize) {    // initializing (general)
         self.context = context                      // set game context
@@ -80,6 +82,8 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
             return
         }
         
+        
+        
         // cycle through different obstacle course states
 //        cycleStates(currentTime)
 
@@ -91,6 +95,12 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         } else if let _ = context.stateMachine?.currentState as? IVDemoState {
             
         } else {
+            //dificulty tick
+            dificultyTickDelay -= deltaTime
+            if dificultyTickDelay <= 0.0 {
+                dificultyTickDelay = IVGameInfo.difficulRankUpDelay
+                IVGameInfo.difficulty += 1
+            }
             
             // scrolling border
             BorderManager.shared.startScrolling()
@@ -338,6 +348,7 @@ class IVGameScene: SKScene, SKPhysicsContactDelegate {
         if timeSinceStateChangeAction >= stateChangeInterval {
             cycleToNextState()
             timeSinceStateChangeAction = 0 // Reset the timer
+            stateChangeInterval = IVGameInfo.getCurStateInterval()
         }
     }
     

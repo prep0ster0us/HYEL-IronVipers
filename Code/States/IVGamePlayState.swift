@@ -40,6 +40,10 @@ class IVGamePlayState: GKState {
         guard let scene, let context else { return }
         print("did enter main game state")
         
+        if previousState is IVDemoState || previousState is IVGameOverState {
+            IVGameInfo.difficulty = 0
+        }
+        
         if scene.childNode(withName: "background") == nil {
             BackgroundManager.shared.setup(scene, context)
         }

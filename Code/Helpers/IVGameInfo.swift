@@ -29,6 +29,10 @@ struct IVGameInfo {
     let bgColors: [SKColor] = [.blue, .purple, .orange, .red, .green]
     // TODO: expand to include all properties for the game session
     
+    //Difficulty
+    static var difficulty: UInt32 = 0   //every X seconds, increase by one
+    static var difficulRankUpDelay: CGFloat = 15.0  //5 seconds?
+    
     // Physics Body Categories (for collision detection)
     static let none: UInt32 = 0
     static let player: UInt32 = 0x1 << 0  // 1
@@ -61,35 +65,52 @@ struct IVGameInfo {
     var bgChangeDuration = 6.0
     
     func getProjectileSpeed(for score: Int) -> CGFloat {
-        switch score {
+        switch IVGameInfo.difficulty {
         case 0...5:
-            return 2.0
+            return 3.2
         case 6...10:
-            return 1.5
-        case 11...15:
-            return 1.2
-        case 16...20:
-            return 1.1
-        case 21...25:
-            return 0.8
-        default:
+            return 2.5
+        case 11...18:
             return 2.0
+        case 18...23:
+            return 1.3
+        case 24...30:
+            return 1.0
+        default:
+            return 0.7
         }
     }
     func getNumberOfProjectiles(for score: Int) -> Int {
-        switch score {
-        case 0...5:
+        switch IVGameInfo.difficulty {
+        case 0...3:
             return 1
-        case 6...10:
-            return 1
-        case 11...15:
+        case 4...5:
             return 2
-        case 16...20:
+        case 6...10:
             return 3
-        case 21...25:
+        case 13...18:
             return 5
+        case 18...20:
+            return 6
+        case 21...25:
+            return 7
         default:
-            return 1
+            return 9
+        }
+    }
+    
+    static func getCurStateInterval() -> TimeInterval {
+        switch IVGameInfo.difficulty {
+        case 0...10:
+            return 30.0
+        case 11...20:
+            return 24.0
+        case 20...25:
+            return 18.0
+        case 25...32:
+            return 15.0
+        default:
+            return 10.0
         }
     }
 }
