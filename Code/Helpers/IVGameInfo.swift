@@ -15,7 +15,7 @@ struct IVGameInfo {
     var health = 100
     var testHealth = 0
     var gameEndScore = 0
-    var transitionScore = 1
+    var transitionScore = 5
     var projectilePenalty = 5
     var laserPenalty = 10
     var laserReward = 5
@@ -77,6 +77,8 @@ struct IVGameInfo {
             return 1.1
         case 21...25:
             return 0.8
+        case 26...40:
+            return 0.7
         default:
             return 2.0
         }
@@ -92,7 +94,9 @@ struct IVGameInfo {
         case 16...20:
             return 3
         case 21...25:
-            return 5
+            return 4
+        case 26...40:
+            return 6
         default:
             return 1
         }

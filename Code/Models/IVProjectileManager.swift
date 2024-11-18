@@ -87,30 +87,47 @@ class ProjectileManager {
 
     func randomSpawnPoint() -> CGPoint {
         guard let scene = scene else { return .zero }
-        let direction = CGFloat.random(in: 0...1)
-
-        if direction < 0.5 {
-            // left --> right
+        // Randomly pick one of the four edges of the screen
+        let edge = Int.random(in: 0..<4)
+        
+        switch edge {
+        case 0: // Left edge
             let y = CGFloat.random(in: 50...(scene.size.height - 50))
             return CGPoint(x: -75, y: y)
-        } else {
-            // top --> bottom
+        case 1: // Right edge
+            let y = CGFloat.random(in: 50...(scene.size.height - 50))
+            return CGPoint(x: scene.size.width + 75, y: y)
+        case 2: // Top edge
             let x = CGFloat.random(in: 50...(scene.size.width - 50))
             return CGPoint(x: x, y: scene.size.height + 75)
+        case 3: // Bottom edge
+            let x = CGFloat.random(in: 50...(scene.size.width - 50))
+            return CGPoint(x: x, y: -75)
+        default:
+            return .zero
         }
     }
 
     func randomExitPoint(from spawnPoint: CGPoint) -> CGPoint {
         guard let scene = scene else { return .zero }
 
-        if spawnPoint.x < 0 {
-            // exit from right edge of the screen
+        // Ensure the exit point is on a different edge than the spawn point
+        if spawnPoint.x < 0 { // Spawned from left edge
+            // exit on right
             let y = CGFloat.random(in: 25...(scene.size.height - 25))
             return CGPoint(x: scene.size.width + 50, y: y)
-        } else {
-            // exit from bottom of the screen
+        } else if spawnPoint.x > scene.size.width { // Spawned from right edge
+            // exit on left
+            let y = CGFloat.random(in: 25...(scene.size.height - 25))
+            return CGPoint(x: -50, y: y)
+        } else if spawnPoint.y > scene.size.height {
+            // exit from bottom
             let x = CGFloat.random(in: 25...(scene.size.width - 25))
             return CGPoint(x: x, y: -50)
+        } else { // Spawned from bottom edge
+            // exit from top
+            let x = CGFloat.random(in: 25...(scene.size.width - 25))
+            return CGPoint(x: x, y: scene.size.height + 50)
         }
     }
 
